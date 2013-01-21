@@ -18,6 +18,7 @@
 //************************************************************************//
 #include<stdio.h>
 #include<stdlib.h>
+#include<signal.h>
 #include<iostream>
 #include<vector>
 #include<stdexcept>
@@ -37,7 +38,20 @@
 #include"base/MolDS.h"
 using namespace std;
 using namespace MolDS_base;
+
+void my_signal_handler(int signal){
+   cerr << "Caught signal " << signal << "!" << endl << flush;
+   cout << flush;
+   exit(1);
+}
+
 int main(int argc, char *argv[]){
+   signal(SIGINT,  my_signal_handler);
+   signal(SIGTERM, my_signal_handler);
+   signal(SIGHUP,  my_signal_handler);
+   signal(SIGILL,  my_signal_handler);
+   signal(SIGABRT, my_signal_handler);
+
    string optionHelp="-h";
    string optionVersion="-v";
    string messageHelp="See README.txt: \"http://sourceforge.jp/projects/molds/scm/svn/tree/head/trunk/doc/\"\n";

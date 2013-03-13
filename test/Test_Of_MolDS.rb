@@ -55,9 +55,9 @@ MKL_NUM_THREADS:%s
 OMP_NUM_THREADS:%s
 EOS
       puts @@command + @moldsCommand
-      system(@moldsCommand)
+      system(@moldsCommand) or abort "Execution error: `#{@moldsCommand}'"
       puts @@command + @diffCommand + @@deleteDiff
-      system(@diffCommand + @@deleteDiff)
+      system(@diffCommand + @@deleteDiff) or abort "Execution error: `#{@diffCommand + @@deleteDiff}'"
 			puts '','',''
    end
    #def initialize(prefix, section=nil, title)

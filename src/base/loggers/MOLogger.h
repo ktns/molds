@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -22,7 +23,7 @@ namespace MolDS_base_loggers{
 
 class MOLogger: public MolDS_base::PrintController{
 public:
-   MOLogger(const MolDS_base::Molecule& molecule, double const* const* fockMatrix, MolDS_base::TheoryType theory);
+   MOLogger(const MolDS_base::IMolecule& molecule, double const* const* fockMatrix, MolDS_base::TheoryType theory);
    void DrawMO(int moIndex);
    void DrawMO(std::vector<int> moIndeces);
 private:
@@ -36,7 +37,7 @@ private:
    std::string messageUnitSec;
    std::string stringCubeExtension;
    MOLogger();
-   MolDS_base::Molecule const* molecule;
+   MolDS_base::IMolecule const* molecule;
    double const* const* fockMatrix;
    MolDS_base::TheoryType theory;
    void MatricesNullCheck() const;
@@ -49,9 +50,9 @@ private:
                            double dx,
                            double dy,
                            double dz) const;
-   void OutputMoleculeToFile(std::ofstream& ofs, const MolDS_base::Molecule& molecule) const;
+   void OutputMoleculeToFile(std::ofstream& ofs, const MolDS_base::IMolecule& molecule) const;
    double GetMoValue(int moIndex, 
-                     const MolDS_base::Molecule& molecule, 
+                     const MolDS_base::IMolecule& molecule,
                      double const* const* fockMatrix, 
                      double x, 
                      double y, 

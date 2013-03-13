@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -43,7 +44,7 @@ using namespace MolDS_base;
 using namespace MolDS_base_atoms;
 namespace MolDS_base_loggers{
 
-MOLogger::MOLogger(const Molecule& molecule, 
+MOLogger::MOLogger(const IMolecule& molecule,
                    double const* const* fockMatrix, 
                    TheoryType theory){
    this->molecule = &molecule;
@@ -176,7 +177,7 @@ void MOLogger::OutputHeaderToFile(ofstream& ofs, double const* origin, double dx
    ofs << string(data);
 }
 
-void MOLogger::OutputMoleculeToFile(ofstream& ofs, const Molecule& molecule) const{
+void MOLogger::OutputMoleculeToFile(ofstream& ofs, const IMolecule& molecule) const{
    char data[1000] = "";
    // output molecule to the cube file
    for(int a=0; a<molecule.GetNumberAtoms(); a++){
@@ -217,7 +218,7 @@ void MOLogger::CalcGridDisplacement(double* dx, double* dy, double* dz) const{
 }
 
 double MOLogger::GetMoValue(int moIndex, 
-                            const MolDS_base::Molecule& molecule, 
+                            const MolDS_base::IMolecule& molecule,
                             double const* const* fockMatrix, 
                             double x, 
                             double y, 

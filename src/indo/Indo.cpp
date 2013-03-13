@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -104,7 +105,7 @@ void Indo::SetEnableAtomTypes(){
 double Indo::GetFockDiagElement(const Atom& atomA, 
                                 int indexAtomA, 
                                 int mu, 
-                                const Molecule& molecule, 
+                                const IMolecule& molecule,
                                 double const* const* gammaAB,
                                 double const* const* orbitalElectronPopulation, 
                                 double const* atomicElectronPopulation,
@@ -151,7 +152,7 @@ double Indo::GetFockOffDiagElement(const Atom& atomA,
                                    int indexAtomB, 
                                    int mu, 
                                    int nu, 
-                                   const Molecule& molecule, 
+                                   const IMolecule& molecule,
                                    double const* const* gammaAB, 
                                    double const* const* overlapAOs,
                                    double const* const* orbitalElectronPopulation, 
@@ -185,7 +186,7 @@ double Indo::GetFockOffDiagElement(const Atom& atomA,
 
 // The order of mol, moJ, moK, moL is consistent with Eq. (9) in [RZ_1973]
 double Indo::GetMolecularIntegralElement(int moI, int moJ, int moK, int moL, 
-                                         const Molecule& molecule, 
+                                         const IMolecule& molecule,
                                          double const* const* fockMatrix, 
                                          double const* const* gammaAB) const{
    double value = 0.0;

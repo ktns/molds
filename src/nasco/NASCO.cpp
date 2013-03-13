@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -55,27 +56,27 @@ NASCO::~NASCO(){
    //this->OutputLog("NASCO deleted\n");
 }
 
-void NASCO::DoNASCO(Molecule& molecule){
+void NASCO::DoNASCO(const boost::shared_ptr<IMolecule>& molecule){
    this->OutputLog(this->messageStartNASCO);
    TheoryType theory = Parameters::GetInstance()->GetCurrentTheory();
    this->CheckEnableTheoryType(theory);
 
    // create tmp molecule and electronic structure
-   Molecule tmpMolecule(molecule);
+   boost::shared_ptr<IMolecule> tmpMolecule = molecule->Clone();
 
    // malloc electornic structure 
    boost::shared_ptr<ElectronicStructure> electronicStructure1(ElectronicStructureFactory::Create());
    ElectronicStructure* currentES = electronicStructure1.get();
-   currentES->SetMolecule(&molecule);
+   currentES->SetMolecule(molecule);
    currentES->SetCanOutputLogs(this->CanOutputLogs());
-   molecule.SetCanOutputLogs(this->CanOutputLogs());
+   molecule->SetCanOutputLogs(this->CanOutputLogs());
 
    // create temporary electronic structure
    boost::shared_ptr<ElectronicStructure> electronicStructure2(ElectronicStructureFactory::Create());
    ElectronicStructure* tmpES = electronicStructure2.get();
-   tmpES->SetMolecule(&tmpMolecule);
+   tmpES->SetMolecule(tmpMolecule);
    tmpES->SetCanOutputLogs(this->CanOutputLogs());
-   tmpMolecule.SetCanOutputLogs(this->CanOutputLogs());
+   tmpMolecule->SetCanOutputLogs(this->CanOutputLogs());
 
    // create real random generator
 	boost::mt19937 realGenerator(Parameters::GetInstance()->GetSeedNASCO());
@@ -101,12 +102,12 @@ void NASCO::DoNASCO(Molecule& molecule){
    // output initial conditions
    this->OutputLog(this->messageInitialConditionNASCO);
    this->OutputLog(boost::format("%s%d\n\n") % this->messageElectronicState % elecState );
-   initialEnergy = this->OutputEnergies(*currentES, molecule, elecState);
+   initialEnergy = this->OutputEnergies(*currentES, *molecule.get(), elecState);
    this->OutputLog("\n");
-   molecule.OutputConfiguration();
-   molecule.OutputXyzCOM();
-   molecule.OutputXyzCOC();
-   molecule.OutputMomenta();
+   molecule->OutputConfiguration();
+   molecule->OutputXyzCOM();
+   molecule->OutputXyzCOC();
+   molecule->OutputMomenta();
 
    // malloc ovelap AOs, MOs, Singlet Slater Determinants, and Eigenstates between differentMolecules
    double** overlapAOs = NULL;
@@ -115,15 +116,15 @@ void NASCO::DoNASCO(Molecule& molecule){
    double** overlapESs = NULL;
 
    try{
-      this->MallocOverlapsDifferentMolecules(&overlapAOs, &overlapMOs, &overlapSingletSDs, &overlapESs, molecule);
+      this->MallocOverlapsDifferentMolecules(&overlapAOs, &overlapMOs, &overlapSingletSDs, &overlapESs, *molecule.get());
       for(int s=0; s<totalSteps; s++){
          this->OutputLog(boost::format("%s%d\n") % this->messageStartStepNASCO.c_str() % (s+1) );
 
          // update momenta
-         this->UpdateMomenta(molecule, matrixForce, dt);
+         this->UpdateMomenta(*molecule.get(), matrixForce, dt);
 
          // update coordinates
-         this->UpdateCoordinates(tmpMolecule, molecule, dt);
+         this->UpdateCoordinates(*tmpMolecule.get(), *molecule.get(), dt);
 
          // update electronic structure
          requireGuess = (s==0);
@@ -134,10 +135,10 @@ void NASCO::DoNASCO(Molecule& molecule){
          matrixForce = tmpES->GetForce(elecState);
 
          // update momenta
-         this->UpdateMomenta(molecule, matrixForce, dt);
+         this->UpdateMomenta(*molecule.get(), matrixForce, dt);
 
          // calculate overlaps 
-         currentES->CalcOverlapAOsWithAnotherConfiguration(overlapAOs, tmpMolecule);
+         currentES->CalcOverlapAOsWithAnotherConfiguration(overlapAOs, *tmpMolecule.get());
          currentES->CalcOverlapMOsWithAnotherElectronicStructure(overlapMOs, overlapAOs, *tmpES);
          currentES->CalcOverlapSingletSDsWithAnotherElectronicStructure(overlapSingletSDs, overlapMOs);
          currentES->CalcOverlapESsWithAnotherElectronicStructure(overlapESs, overlapSingletSDs, *tmpES);
@@ -146,32 +147,32 @@ void NASCO::DoNASCO(Molecule& molecule){
          this->DecideNextElecState(&elecState, &nonAdiabaticPhaseIndex, numElecStates, overlapESs, &realRand);
 
          // Synchronize molecular configuration and electronic states
-         molecule.SynchronizeConfigurationTo(tmpMolecule);
+         molecule->SynchronizeConfigurationTo(*tmpMolecule.get());
          swap(currentES, tmpES);
-         currentES->SetMolecule(&molecule);
-         tmpES->SetMolecule(&tmpMolecule);
+         currentES->SetMolecule(molecule);
+         tmpES->SetMolecule(tmpMolecule);
 
          // output results
          this->OutputLog(boost::format("%s%d\n\n") % this->messageElectronicState % elecState );
-         this->OutputEnergies(*currentES, molecule, initialEnergy, elecState);
-         molecule.OutputConfiguration();
-         molecule.OutputXyzCOM();
-         molecule.OutputXyzCOC();
-         molecule.OutputMomenta();
+         this->OutputEnergies(*currentES, *molecule.get(), initialEnergy, elecState);
+         molecule->OutputConfiguration();
+         molecule->OutputXyzCOM();
+         molecule->OutputXyzCOC();
+         molecule->OutputMomenta();
          this->OutputLog(boost::format("%s%lf\n") % this->messageTime.c_str() 
                                                   % (dt*static_cast<double>(s+1)/Parameters::GetInstance()->GetFs2AU()));
          this->OutputLog(boost::format("%s%d\n") % this->messageEndStepNASCO.c_str() % (s+1) );
       }
    }
    catch(MolDSException ex){
-      this->FreeOverlapsDifferentMolecules(&overlapAOs, &overlapMOs, &overlapSingletSDs, &overlapESs, molecule);
+      this->FreeOverlapsDifferentMolecules(&overlapAOs, &overlapMOs, &overlapSingletSDs, &overlapESs, *molecule.get());
       throw ex;
    }
-   this->FreeOverlapsDifferentMolecules(&overlapAOs, &overlapMOs, &overlapSingletSDs, &overlapESs, molecule);
+   this->FreeOverlapsDifferentMolecules(&overlapAOs, &overlapMOs, &overlapSingletSDs, &overlapESs, *molecule.get());
    this->OutputLog(this->messageEndNASCO);
 }
 
-void NASCO::UpdateMomenta(Molecule& molecule, 
+void NASCO::UpdateMomenta(IMolecule& molecule,
                           double const* const* matrixForce, 
                           const double dt) const{
    for(int a=0; a<molecule.GetNumberAtoms(); a++){
@@ -182,8 +183,8 @@ void NASCO::UpdateMomenta(Molecule& molecule,
    }
 }
 
-void NASCO::UpdateCoordinates(Molecule& tmpMolecule, 
-                              const Molecule& molecule,
+void NASCO::UpdateCoordinates(IMolecule& tmpMolecule,
+                              const IMolecule& molecule,
                               const double dt) const{
    for(int a=0; a<molecule.GetNumberAtoms(); a++){
       Atom* atom    = molecule.GetAtom(a);
@@ -247,7 +248,7 @@ void NASCO::SetMessages(){
 }
 
 double NASCO::OutputEnergies(const ElectronicStructure& electronicStructure, 
-                             const Molecule& molecule, 
+                             const IMolecule& molecule,
                              int elecState) const{
    double eV2AU = Parameters::GetInstance()->GetEV2AU();
    double coreKineticEnergy = 0.0;
@@ -287,7 +288,7 @@ double NASCO::OutputEnergies(const ElectronicStructure& electronicStructure,
 }
 
 void NASCO::OutputEnergies(const ElectronicStructure& electronicStructure, 
-                           const Molecule& molecule, 
+                           const IMolecule& molecule,
                            const double initialEnergy, 
                            int elecState) const{
    double energy = this->OutputEnergies(electronicStructure, molecule, elecState);
@@ -328,7 +329,7 @@ void NASCO::MallocOverlapsDifferentMolecules(double*** overlapAOs,
                                              double*** overlapMOs, 
                                              double*** overlapSingletSDs, 
                                              double*** overlapESs, 
-                                             const Molecule& molecule) const{
+                                             const IMolecule& molecule) const{
    int dimOverlapAOs = molecule.GetTotalNumberAOs();
    int dimOverlapMOs = dimOverlapAOs;
    int dimOverlapSingletSDs = Parameters::GetInstance()->GetActiveOccCIS()
@@ -345,7 +346,7 @@ void NASCO::FreeOverlapsDifferentMolecules(double*** overlapAOs,
                                            double*** overlapMOs, 
                                            double*** overlapSingletSDs, 
                                            double*** overlapESs, 
-                                           const MolDS_base::Molecule& molecule) const{
+                                           const MolDS_base::IMolecule& molecule) const{
    int dimOverlapAOs = molecule.GetTotalNumberAOs();
    int dimOverlapMOs = dimOverlapAOs;
    int dimOverlapSingletSDs = Parameters::GetInstance()->GetActiveOccCIS()

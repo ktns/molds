@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -28,7 +29,7 @@ class NASCO : public MolDS_base::PrintController{
 public:
    NASCO();
    ~NASCO();
-   void DoNASCO(MolDS_base::Molecule& molecule);
+   void DoNASCO(const boost::shared_ptr<MolDS_base::IMolecule>& molecule);
 private:
    std::string messageInitialConditionNASCO;
    std::string messageStartNASCO;
@@ -52,11 +53,11 @@ private:
    void CheckEnableTheoryType(MolDS_base::TheoryType theoryType);
    void SetMessages();
    void SetEnableTheoryTypes();
-   void UpdateMomenta(MolDS_base::Molecule& molecule, 
+   void UpdateMomenta(MolDS_base::IMolecule& molecule,
                       double const* const* matrixForce, 
                       const double dt) const;
-   void UpdateCoordinates(MolDS_base::Molecule& tmpMolecule, 
-                          const MolDS_base::Molecule& molecule,
+   void UpdateCoordinates(MolDS_base::IMolecule& tmpMolecule,
+                          const MolDS_base::IMolecule& molecule,
                           const double dt) const;
    void DecideNextElecState(int* elecState, 
                             int* nonAdiabaticPhaseIndex,
@@ -67,22 +68,22 @@ private:
                                boost::uniform_real<>
                             > (*realRand)) const;
    void OutputEnergies(const MolDS_base::ElectronicStructure& electronicStructure, 
-                       const MolDS_base::Molecule& molecule, 
+                       const MolDS_base::IMolecule& molecule,
                        const double initialEnergy, 
                        const int elecState) const;
    double OutputEnergies(const MolDS_base::ElectronicStructure& electronicStructure, 
-                         const MolDS_base::Molecule& molecule, 
+                         const MolDS_base::IMolecule& molecule,
                          const int elecState) const;
    void MallocOverlapsDifferentMolecules(double*** overlapAOs,
                                          double*** overlapMOs, 
                                          double*** overlapSingleSDs,
                                          double*** overlapESs, 
-                                         const MolDS_base::Molecule& molecule) const;
+                                         const MolDS_base::IMolecule& molecule) const;
    void FreeOverlapsDifferentMolecules(double*** overlapAOs,
                                        double*** overlapMOs, 
                                        double*** overlapSingleSDs,
                                        double*** overlapESs, 
-                                       const MolDS_base::Molecule& molecule) const;
+                                       const MolDS_base::IMolecule& molecule) const;
 };
 
 }

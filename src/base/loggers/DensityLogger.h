@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -22,7 +23,7 @@ namespace MolDS_base_loggers{
 
 class DensityLogger: public MolDS_base::PrintController{
 public:
-   DensityLogger(const MolDS_base::Molecule& molecule, 
+   DensityLogger(const MolDS_base::IMolecule& molecule,
                  double const* const* fockMatrix, 
                  double const* const* cisMatrix, 
                  MolDS_base::TheoryType theory);
@@ -40,7 +41,7 @@ protected:
    DensityLogger();
    void SetMessages();
    double GetMOValue(int moIndex, 
-                     const MolDS_base::Molecule& molecule, 
+                     const MolDS_base::IMolecule& molecule,
                      double const* const* fockmatrix,
                      double x, 
                      double y, 
@@ -59,7 +60,7 @@ private:
    std::string messageCubeHeaderComment2;
    std::string messageSkippedElecStateIndex;
    std::string messageUnitSec; 
-   MolDS_base::Molecule const* molecule;
+   MolDS_base::IMolecule const* molecule;
    double const* const* fockMatrix;
    double const* const* cisMatrix;
    MolDS_base::TheoryType theory;
@@ -71,12 +72,12 @@ private:
                            double dx, 
                            double dy,
                            double dz) const;
-   void OutputMoleculeToFile(std::ofstream& ofs, const MolDS_base::Molecule& molecule)const ;
+   void OutputMoleculeToFile(std::ofstream& ofs, const MolDS_base::IMolecule& molecule)const ;
    void CalcActiveMOs(double**** activeOccMOs, 
                       double**** activeVirMOs,
                       double dx, double dy, double dz,
                       double const* origin,
-                      const MolDS_base::Molecule& molecule, 
+                      const MolDS_base::IMolecule& molecule,
                       double const* const* fockMatrix,
                       double const* const* cisMatrix) const;
    void MallocTemporaryActiveMOs(double***** activeOccMOs, double***** activeVirMOs) const;

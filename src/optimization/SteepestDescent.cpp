@@ -62,7 +62,7 @@ void SteepestDescent::SetMessages(){
 }
 
 void SteepestDescent::SearchMinimum(boost::shared_ptr<ElectronicStructure> electronicStructure,
-                                    Molecule& molecule,
+                                    IMolecule& molecule,
                                     double* lineSearchedEnergy,
                                     bool* obtainesOptimizedStructure) const{
    int    elecState            = Parameters::GetInstance()->GetElectronicStateIndexOptimization();

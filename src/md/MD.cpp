@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -43,8 +44,7 @@ using namespace MolDS_base_atoms;
 using namespace MolDS_base_factories;
 
 namespace MolDS_md{
-MD::MD(){
-   this->molecule = NULL;
+MD::MD():molecule(){
    this->SetMessages();
    this->SetEnableTheoryTypes();
    //this->OutputLog("MD created \n");
@@ -54,7 +54,7 @@ MD::~MD(){
    //this->OutputLog("MD deleted\n");
 }
 
-void MD::SetMolecule(Molecule* molecule){
+void MD::SetMolecule(const boost::shared_ptr<IMolecule>& molecule){
    // check enable electonic theory
    this->molecule = molecule;
 }
@@ -127,7 +127,7 @@ void MD::DoMD(){
    this->OutputLog(this->messageEndMD);
 }
 
-void MD::UpdateMomenta(const Molecule& molecule, double const* const* matrixForce, double dt) const{
+void MD::UpdateMomenta(const IMolecule& molecule, double const* const* matrixForce, double dt) const{
 #pragma omp parallel for schedule(auto)
    for(int a=0; a<molecule.GetNumberAtoms(); a++){
       Atom* atom = molecule.GetAtom(a);
@@ -137,7 +137,7 @@ void MD::UpdateMomenta(const Molecule& molecule, double const* const* matrixForc
    }
 }
 
-void MD::UpdateCoordinates(Molecule& molecule, double dt) const{
+void MD::UpdateCoordinates(IMolecule& molecule, double dt) const{
 #pragma omp parallel for schedule(auto)
       for(int a=0; a<molecule.GetNumberAtoms(); a++){
          Atom* atom = molecule.GetAtom(a);

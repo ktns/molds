@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -55,18 +56,17 @@ RPMD::~RPMD(){
    //this->OutputLog("RPMD deleted\n");
 }
 
-void RPMD::CreateBeads(vector<boost::shared_ptr<Molecule> >& molecularBeads,
+void RPMD::CreateBeads(vector<boost::shared_ptr<IMolecule> >& molecularBeads,
                        vector<boost::shared_ptr<ElectronicStructure> >& electronicStructureBeads,
-                       const Molecule& refferenceMolecule,
+                       const IMolecule& refferenceMolecule,
                        int numBeads){
    for(int b=0; b<numBeads; b++){
       // create molecular beads
-      boost::shared_ptr<Molecule> molecule(new Molecule());
-      *molecule = refferenceMolecule;
+      boost::shared_ptr<IMolecule> molecule(refferenceMolecule.Clone());
       molecularBeads.push_back(molecule);
       // create electronic structure beads
       boost::shared_ptr<ElectronicStructure> electronicStructure(ElectronicStructureFactory::Create());
-      electronicStructure->SetMolecule(molecule.get());
+      electronicStructure->SetMolecule(molecule);
       electronicStructureBeads.push_back(electronicStructure);
    }
 }
@@ -83,7 +83,7 @@ void RPMD::UpdateElectronicStructure(const std::vector<boost::shared_ptr<Electro
 }
 
 // elecState=0 means ground state.
-void RPMD::UpdateMomenta(const vector<boost::shared_ptr<Molecule> >& molecularBeads,
+void RPMD::UpdateMomenta(const vector<boost::shared_ptr<IMolecule> >& molecularBeads,
                          const std::vector<boost::shared_ptr<ElectronicStructure> >& electronicStructureBeads,
                          int elecState,
                          double dt,
@@ -110,7 +110,7 @@ void RPMD::UpdateMomenta(const vector<boost::shared_ptr<Molecule> >& molecularBe
    }
 }
 
-void RPMD::UpdateCoordinates(const vector<boost::shared_ptr<Molecule> >& molecularBeads,
+void RPMD::UpdateCoordinates(const vector<boost::shared_ptr<IMolecule> >& molecularBeads,
                              double dt){
    int numBeads = molecularBeads.size();
    int numAtom = molecularBeads[0]->GetNumberAtoms();
@@ -127,7 +127,7 @@ void RPMD::UpdateCoordinates(const vector<boost::shared_ptr<Molecule> >& molecul
    }
 }
 
-void RPMD::FluctuateBeads(const vector<boost::shared_ptr<Molecule> >& molecularBeads,
+void RPMD::FluctuateBeads(const vector<boost::shared_ptr<IMolecule> >& molecularBeads,
                           int elecState,
                           double temperature,
                           unsigned long seed){
@@ -135,7 +135,7 @@ void RPMD::FluctuateBeads(const vector<boost::shared_ptr<Molecule> >& molecularB
    double stepWidth = 0.01;
    for(int b=0; b<numBeads; b++){
       boost::shared_ptr<MolDS_mc::MC> mc(new MolDS_mc::MC());
-      Molecule* molecule = molecularBeads[b].get();
+      const boost::shared_ptr<IMolecule>& molecule = molecularBeads[b];
       molecule->SetCanOutputLogs(false);
       mc->SetMolecule(molecule);
       mc->SetCanOutputLogs(false);
@@ -143,7 +143,7 @@ void RPMD::FluctuateBeads(const vector<boost::shared_ptr<Molecule> >& molecularB
    }
 }
 
-void RPMD::DoRPMD(const Molecule& refferenceMolecule){
+void RPMD::DoRPMD(const IMolecule& refferenceMolecule){
    this->OutputLog(this->messageStartRPMD);
 
    // validate theory
@@ -160,7 +160,7 @@ void RPMD::DoRPMD(const Molecule& refferenceMolecule){
    int numAtom        = refferenceMolecule.GetNumberAtoms();
 
    // create Beads
-   vector<boost::shared_ptr<Molecule> > molecularBeads;
+   vector<boost::shared_ptr<IMolecule> > molecularBeads;
    vector<boost::shared_ptr<ElectronicStructure> > electronicStructureBeads;
    this->CreateBeads(molecularBeads, electronicStructureBeads, refferenceMolecule, numBeads);
 
@@ -229,7 +229,7 @@ void RPMD::SetMessages(){
    this->messageTime = "\tTime in [fs]: ";
 }
 
-double RPMD::OutputEnergies(const vector<boost::shared_ptr<Molecule> >& molecularBeads,
+double RPMD::OutputEnergies(const vector<boost::shared_ptr<IMolecule> >& molecularBeads,
                             const std::vector<boost::shared_ptr<ElectronicStructure> >& electronicStructureBeads,
                             int elecState,
                             double temperature){
@@ -291,7 +291,7 @@ double RPMD::OutputEnergies(const vector<boost::shared_ptr<Molecule> >& molecula
    return totalEnergy;
 }
 
-void RPMD::OutputEnergies(const vector<boost::shared_ptr<Molecule> >& molecularBeads,
+void RPMD::OutputEnergies(const vector<boost::shared_ptr<IMolecule> >& molecularBeads,
                           const std::vector<boost::shared_ptr<ElectronicStructure> >& electronicStructureBeads,
                           int elecState,
                           double temperature,

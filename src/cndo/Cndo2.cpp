@@ -61,9 +61,8 @@ namespace MolDS_cndo{
 /***
  *  Refferences for Cndo2 are [PB_1970], [PSS_1965], and [PS_1965].
  */
-Cndo2::Cndo2(){
+Cndo2::Cndo2():molecule(){
    //protected variables
-   this->molecule = NULL;
    this->theory = CNDO2;
    this->coreRepulsionEnergy = 0.0;
    this->vdWCorrectionEnergy = 0.0;
@@ -258,7 +257,7 @@ TheoryType Cndo2::GetTheoryType() const{
    return this->theory;
 }
 
-void Cndo2::SetMolecule(Molecule* molecule){
+void Cndo2::SetMolecule(const boost::shared_ptr<IMolecule>& molecule){
    this->molecule = molecule;
    this->CheckNumberValenceElectrons(*molecule);
    this->CheckEnableAtomType(*molecule);
@@ -298,7 +297,7 @@ void Cndo2::SetMolecule(Molecule* molecule){
    }
 }
 
-void Cndo2::CheckNumberValenceElectrons(const Molecule& molecule) const{
+void Cndo2::CheckNumberValenceElectrons(const IMolecule& molecule) const{
    if(molecule.GetTotalNumberValenceElectrons() % 2 == 1){
       stringstream ss;
       ss << this->errorMessageOddTotalValenceElectrions << molecule.GetTotalNumberValenceElectrons() << "\n";
@@ -306,7 +305,7 @@ void Cndo2::CheckNumberValenceElectrons(const Molecule& molecule) const{
    }
 }
 
-void Cndo2::CheckEnableAtomType(const Molecule& molecule) const{
+void Cndo2::CheckEnableAtomType(const IMolecule& molecule) const{
    for(int i=0; i<molecule.GetNumberAtoms(); i++){
       AtomType atomType = molecule.GetAtom(i)->GetAtomType();
       bool enable = false;
@@ -497,7 +496,7 @@ double Cndo2::GetDiatomVdWCorrection2ndDerivative(int indexAtomA,
 
 /*******
  *
- * Call Cndo2::SetMolecule(Molecule* molecule) at least once, 
+ * Call Cndo2::SetMolecule(IMolecule* molecule) at least once,
  * before this function is called.
  *
  *****/
@@ -660,7 +659,7 @@ void Cndo2::CalcSCFProperties(){
    }
 }
 
-void Cndo2::CalcNormalModes(double** normalModes, double* normalForceConstants, const Molecule& molecule) const{
+void Cndo2::CalcNormalModes(double** normalModes, double* normalForceConstants, const IMolecule& molecule) const{
    stringstream ss;
    ss << this->errorMessageCalcFrequenciesNormalModesBadTheory;
    throw MolDSException(ss.str());
@@ -737,7 +736,7 @@ double** Cndo2::GetForce(int elecState){
 }
 
 void Cndo2::CalcTwoElecTwoCore(double****** twoElecTwoCore, 
-                               const Molecule& molecule) const{
+                               const IMolecule& molecule) const{
    // do nothing for CNDO, INDO, and ZINDO/S.
    // two electron two core integrals are not needed for CNDO, INDO, and ZINDO/S.
 }
@@ -811,7 +810,7 @@ void Cndo2::DoDIIS(double** orbitalElectronPopulation,
                    double&   diisError,
                    bool&     hasAppliedDIIS,
                    int       diisNumErrorVect,
-                   const     Molecule& molecule,
+                   const     IMolecule& molecule,
                    int       step) const{
    int totalNumberAOs = molecule.GetTotalNumberAOs();
    double diisStartError = Parameters::GetInstance()->GetDiisStartErrorSCF();
@@ -924,7 +923,7 @@ void Cndo2::DoDamp(double rmsDensity,
                    bool&  hasAppliedDamping,
                    double** orbitalElectronPopulation, 
                    double const* const* oldOrbitalElectronPopulation, 
-                   const Molecule& molecule) const{
+                   const IMolecule& molecule) const{
    double dampingThresh = Parameters::GetInstance()->GetDampingThreshSCF();
    double dampingWeight = Parameters::GetInstance()->GetDampingWeightSCF();
    hasAppliedDamping = false;
@@ -1077,7 +1076,7 @@ void Cndo2::OutputSCFMulliken() const{
 
 void Cndo2::OutputNormalModes(double const* const* normalModes, 
                               double const* normalForceConstants, 
-                              const Molecule& molecule) const{
+                              const IMolecule& molecule) const{
 
    int hessianDim = CartesianType_end*molecule.GetNumberAtoms();
    double ang2AU = Parameters::GetInstance()->GetAngstrom2AU();
@@ -1176,7 +1175,7 @@ void Cndo2::OutputSCFResults() const{
 }
 
 void Cndo2::CalcElecSCFEnergy(double* elecSCFEnergy, 
-                             const Molecule& molecule, 
+                             const IMolecule& molecule,
                              double const* energiesMO, 
                              double const* const* fockMatrix, 
                              double const* const* gammaAB, 
@@ -1279,7 +1278,7 @@ void Cndo2::FreeElecEnergyMatrices(double*** fMatrix,
 
 // The order of moI, moJ, moK, moL is consistent with Eq. (9) in [RZ_1973]
 double Cndo2::GetMolecularIntegralElement(int moI, int moJ, int moK, int moL, 
-                                          const Molecule& molecule, 
+                                          const IMolecule& molecule,
                                           double const* const* fockMatrix, 
                                           double const* const* gammaAB) const{
    double value = 0.0;
@@ -1370,7 +1369,7 @@ bool Cndo2::SatisfyConvergenceCriterion(double const* const * oldOrbitalElectron
  *
  * ******/
 void Cndo2::CalcFockMatrix(double** fockMatrix, 
-                           const Molecule& molecule, 
+                           const IMolecule& molecule,
                            double const* const* overlapAOs, 
                            double const* const* gammaAB,
                            double const* const* orbitalElectronPopulation, 
@@ -1453,7 +1452,7 @@ void Cndo2::CalcFockMatrix(double** fockMatrix,
 double Cndo2::GetFockDiagElement(const Atom& atomA, 
                                  int indexAtomA, 
                                  int mu, 
-                                 const Molecule& molecule, 
+                                 const IMolecule& molecule,
                                  double const* const* gammaAB,
                                  double const* const* orbitalElectronPopulation, 
                                  double const* atomicElectronPopulation,
@@ -1489,7 +1488,7 @@ double Cndo2::GetFockOffDiagElement(const Atom& atomA,
                                     int indexAtomB, 
                                     int mu, 
                                     int nu, 
-                                    const Molecule& molecule, 
+                                    const IMolecule& molecule,
                                     double const* const* gammaAB, 
                                     double const* const* overlapAOs,
                                     double const* const* orbitalElectronPopulation, 
@@ -1506,7 +1505,7 @@ double Cndo2::GetFockOffDiagElement(const Atom& atomA,
 }
 
 void Cndo2::CalcOrbitalElectronPopulation(double** orbitalElectronPopulation, 
-                                          const Molecule& molecule, 
+                                          const IMolecule& molecule,
                                           double const* const* fockMatrix) const{
    const int totalNumberAOs = molecule.GetTotalNumberAOs();
    const int numberTotalValenceElectrons = molecule.GetTotalNumberValenceElectrons();
@@ -1538,7 +1537,7 @@ void Cndo2::CalcOrbitalElectronPopulation(double** orbitalElectronPopulation,
 
 void Cndo2::CalcAtomicElectronPopulation(double* atomicElectronPopulation,
                                          double const* const* orbitalElectronPopulation, 
-                                         const Molecule& molecule) const{
+                                         const IMolecule& molecule) const{
    int totalNumberAtoms = molecule.GetNumberAtoms();
    MallocerFreer::GetInstance()->Initialize<double>(atomicElectronPopulation, totalNumberAtoms);
 
@@ -1555,7 +1554,7 @@ void Cndo2::CalcAtomicElectronPopulation(double* atomicElectronPopulation,
 }
 
 // calculate gammaAB matrix. (B.56) and (B.62) in J. A. Pople book.
-void Cndo2::CalcGammaAB(double** gammaAB, const Molecule& molecule) const{
+void Cndo2::CalcGammaAB(double** gammaAB, const IMolecule& molecule) const{
    int totalAtomNumber = molecule.GetNumberAtoms();
    stringstream ompErrors;
 #pragma omp parallel for schedule(auto) 
@@ -1646,7 +1645,7 @@ void Cndo2::CalcGammaAB(double** gammaAB, const Molecule& molecule) const{
 }
 
 void Cndo2::CalcCoreDipoleMoment(double* coreDipoleMoment,
-                                 const Molecule& molecule) const{
+                                 const IMolecule& molecule) const{
 
    for(int i=0; i<CartesianType_end; i++){
       coreDipoleMoment[i] = 0.0;
@@ -1659,7 +1658,7 @@ void Cndo2::CalcCoreDipoleMoment(double* coreDipoleMoment,
 
 void Cndo2::CalcElectronicDipoleMomentGroundState(double*** electronicTransitionDipoleMoments,
                                                   double const* const* const* cartesianMatrix,
-                                                  const Molecule& molecule,
+                                                  const IMolecule& molecule,
                                                   double const* const* orbitalElectronPopulation,
                                                   double const* const* overlapAOs) const{
    int groundState = 0;
@@ -1680,7 +1679,7 @@ void Cndo2::CalcElectronicTransitionDipoleMoment(double* transitionDipoleMoment,
                                                  double const* const* fockMatrix,
                                                  double const* const* matrixCIS,
                                                  double const* const* const* cartesianMatrix,
-                                                 const MolDS_base::Molecule& molecule, 
+                                                 const MolDS_base::IMolecule& molecule,
                                                  double const* const* orbitalElectronPopulation,
                                                  double const* const* overlapAOs,
                                                  double const* groundStateDipole) const{
@@ -1720,7 +1719,7 @@ void Cndo2::CalcElectronicTransitionDipoleMoment(double* transitionDipoleMoment,
 // calculate Cartesian matrix between atomic orbitals. 
 // The analytic Cartesian matrix is calculated with Gaussian expansion technique written in [DY_1977]
 void Cndo2::CalcCartesianMatrixByGTOExpansion(double*** cartesianMatrix, 
-                                              const Molecule& molecule, 
+                                              const IMolecule& molecule,
                                               STOnGType stonG) const{
    int totalAONumber = molecule.GetTotalNumberAOs();
    int totalAtomNumber = molecule.GetNumberAtoms();
@@ -3573,8 +3572,8 @@ void Cndo2::FreeDiatomicOverlapAOsAndRotatingMatrix(double*** diatomicOverlapAOs
 // Note that rhs-moledule is this->molecule (current configuration) 
 // and lhs-molecule is another molecule (another configuration).
 void Cndo2::CalcOverlapAOsWithAnotherConfiguration(double** overlapAOs, 
-                                                   const Molecule& lhsMolecule) const{
-   const Molecule* rhsMolecule = this->molecule;
+                                                   const IMolecule& lhsMolecule) const{
+   const IMolecule* rhsMolecule = this->molecule.get();
    if(lhsMolecule.GetTotalNumberAOs() != rhsMolecule->GetTotalNumberAOs()){
       stringstream ss;
       ss << this->errorMessageCalcOverlapAOsDifferentConfigurationsDiffAOs;
@@ -3715,7 +3714,7 @@ void Cndo2::CalcOverlapESsWithAnotherElectronicStructure(double** overlapESs,
 }
 
 // calculate OverlapAOs matrix. E.g. S_{\mu\nu} in (3.74) in J. A. Pople book.
-void Cndo2::CalcOverlapAOs(double** overlapAOs, const Molecule& molecule) const{
+void Cndo2::CalcOverlapAOs(double** overlapAOs, const IMolecule& molecule) const{
    int totalAONumber = molecule.GetTotalNumberAOs();
    int totalAtomNumber = molecule.GetNumberAtoms();
 
@@ -4165,7 +4164,7 @@ void Cndo2::FreeDiatomicOverlapAOs2ndDeriTemps(double*** diaOverlapAOsInDiaFrame
 // calculate OverlapAOs matrix. E.g. S_{\mu\nu} in (3.74) in J. A. Pople book by GTO expansion.
 // See Eqs. (28) - (32) in [DY_1977]
 void Cndo2::CalcOverlapAOsByGTOExpansion(double** overlapAOs, 
-                                         const Molecule& molecule, 
+                                         const IMolecule& molecule,
                                          STOnGType stonG) const{
    int totalAONumber = molecule.GetTotalNumberAOs();
    int totalAtomNumber = molecule.GetNumberAtoms();

@@ -1,6 +1,7 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
 // Copyright (C) 2012-2013 Michihiro Okuyama
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -53,15 +54,15 @@ protected:
                                                      double const* const* fockMatrix,
                                                      double const* const* matrixCIS,
                                                      double const* const* const* cartesianMatrix,
-                                                     const MolDS_base::Molecule& molecule, 
+                                                     const MolDS_base::IMolecule& molecule,
                                                      double const* const* orbitalElectronPopulation,
                                                      double const* const* overlapAOs,
                                                      double const* groundStateDipole) const;
-   virtual void CalcGammaAB(double** gammaAB, const MolDS_base::Molecule& molecule) const;
+   virtual void CalcGammaAB(double** gammaAB, const MolDS_base::IMolecule& molecule) const;
    virtual double GetFockDiagElement(const MolDS_base_atoms::Atom& atomA, 
                                      int indexAtomA, 
                                      int mu, 
-                                     const MolDS_base::Molecule& molecule, 
+                                     const MolDS_base::IMolecule& molecule,
                                      double const* const* gammaAB,
                                      double const* const* orbitalElectronPopulation, 
                                      double const* atomicElectronPopulation,
@@ -72,7 +73,7 @@ protected:
                                         int indexAtomA, 
                                         int indexAtomB, 
                                         int mu, int nu, 
-                                        const MolDS_base::Molecule& molecule, 
+                                        const MolDS_base::IMolecule& molecule,
                                         double const* const* gammaAB, 
                                         double const* const* overelap,
                                         double const* const* orbitalElectronPopulation, 
@@ -97,18 +98,18 @@ protected:
                                               int moJ, 
                                               int moK, 
                                               int moL, 
-                                              const MolDS_base::Molecule& molecule, 
+                                              const MolDS_base::IMolecule& molecule,
                                               double const* const* fockMatrix, 
                                               double const* const* gammaAB) const;
    virtual void CalcCISMatrix(double** matrixCIS) const;
    double GetCISDiagElement(double const* energiesMO,
                             double const* const* const* const* nishimotoMatagaMatrix,
-                            const MolDS_base::Molecule& molecule,
+                            const MolDS_base::IMolecule& molecule,
                             double const* const* fockMatrix, 
                             int moI,
                             int moA) const;
    double GetCISOffDiagElement(double const* const* const* const* nishimotoMatagaMatrix,
-                               const MolDS_base::Molecule& molecule,
+                               const MolDS_base::IMolecule& molecule,
                                double const* const* fockMatrix, 
                                int moI,
                                int moA,
@@ -116,8 +117,8 @@ protected:
                                int moB) const;
    virtual void CalcForce(const std::vector<int>& elecStates);
    int GetSlaterDeterminantIndex(int activeOccIndex, int activeVirIndex) const;
-   int GetActiveOccIndex(const MolDS_base::Molecule& molecule, int matrixCISIndex) const;
-   int GetActiveVirIndex(const MolDS_base::Molecule& molecule, int matrixCISIndex) const;
+   int GetActiveOccIndex(const MolDS_base::IMolecule& molecule, int matrixCISIndex) const;
+   int GetActiveVirIndex(const MolDS_base::IMolecule& molecule, int matrixCISIndex) const;
    void CheckMatrixForce(const std::vector<int>& elecStates);
 private:
    std::string errorMessageCalcForceNotGroundState;
@@ -156,33 +157,33 @@ private:
    void OutputCISMulliken() const;
    void OutputCISUnpairedPop() const;
    void CalcFreeExcitonEnergies(double** freeExcitonEnergiesCIS, 
-                                const MolDS_base::Molecule& molecule, 
+                                const MolDS_base::IMolecule& molecule,
                                 double const* energiesMO, 
                                 double const* const* matrixCIS,
                                 int matrixCISdimension) const;
    void CalcOrbitalElectronPopulationCIS(double**** orbitalElectronPopulationCIS, 
                                          double const* const* orbitalElectronPopulation, 
-                                         const MolDS_base::Molecule& molecule, 
+                                         const MolDS_base::IMolecule& molecule,
                                          double const* const* fockMatrix,
                                          double const* const* matrixCIS) const;
    void CalcAtomicElectronPopulationCIS(double*** atomicElectronPopulationCIS,
                                         double const* const* const* orbitalElectronPopulationCIS, 
-                                        const MolDS_base::Molecule& molecule) const;
+                                        const MolDS_base::IMolecule& molecule) const;
    void CalcAtomicUnpairedPopulationCIS(double*** atomicUnpairedPopulationCIS,
                                         double const* const* const* orbitalElectronPopulationCIS, 
-                                        const MolDS_base::Molecule& molecule) const; 
+                                        const MolDS_base::IMolecule& molecule) const;
    void CalcElectronicDipoleMomentsExcitedStates(double*** electronicTransitionDipoleMoments,
                                                  double const* const* fockMatrix,
                                                  double const* const* matrixCIS,
                                                  double const* const* const* cartesianMatrix,
-                                                 const MolDS_base::Molecule& molecule, 
+                                                 const MolDS_base::IMolecule& molecule,
                                                  double const* const* orbitalElectronPopulation,
                                                  double const* const* overlapAOs) const;
    void CalcElectronicTransitionDipoleMoments(double*** electronicTransitionDipoleMoments,
                                               double const* const* fockMatrix,
                                               double const* const* matrixCIS,
                                               double const* const* const* cartesianMatrix,
-                                              const MolDS_base::Molecule& molecule, 
+                                              const MolDS_base::IMolecule& molecule,
                                               double const* const* orbitalElectronPopulation,
                                               double const* const* overlapAOs) const;
    double GetNishimotoMatagaTwoEleInt(const MolDS_base_atoms::Atom& atomA, 
@@ -206,7 +207,7 @@ private:
                                                    const double rAB,
                                                    MolDS_base::CartesianType axisA) const;// ref. [MN_1957] and (5a) in [AEZ_1986]
    void CalcNishimotoMatagaMatrix(double**** nishimotoMatagaMatrix, 
-                                  const MolDS_base::Molecule& molecule) const;
+                                  const MolDS_base::IMolecule& molecule) const;
    void CalcRitzVector(double* ritzVector, 
                        double const* const* expansionVectors, 
                        double const* const* interactionMatrix, 

@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -58,13 +59,13 @@ using namespace MolDS_base_factories;
 namespace MolDS_base{
 void MolDS::Run(int argc, char *argv[]){
    bool runsNormally(true);
-   Molecule* molecule(NULL);
+   boost::shared_ptr<IMolecule> molecule;
    
    // timer and initialize
    try{
       this->Initialize();
-      molecule = new Molecule();
-      InputParser::GetInstance()->Parse(molecule, argc, argv);
+      molecule.reset<Molecule>(new Molecule);
+      InputParser::GetInstance()->Parse(molecule.get(), argc, argv);
    }
    catch(MolDSException ex){
       this->OutputLog(boost::format("%s\n") % ex.what());
@@ -103,20 +104,21 @@ void MolDS::Run(int argc, char *argv[]){
 
    // Diagonalize Inertia Tensor
    else if(runsNormally && Parameters::GetInstance()->GetCurrentSimulation() == PrincipalAxes ){
-      this->DiagonalizePrincipalAxes(molecule, &runsNormally);
+      this->DiagonalizePrincipalAxes(molecule.get(), &runsNormally);
    }
 
    // Translate molecule
    else if(runsNormally && Parameters::GetInstance()->GetCurrentSimulation() == Translate){
-      this->TranslateMolecule(molecule, &runsNormally);
+      this->TranslateMolecule(molecule.get(), &runsNormally);
    }
 
    // Rotate molecule
    else if(runsNormally && Parameters::GetInstance()->GetCurrentSimulation() == Rotate){
-      this->RotateMolecule(molecule, &runsNormally);
+      this->RotateMolecule(molecule.get(), &runsNormally);
    }
 
-   delete molecule;
+   molecule = boost::shared_ptr<IMolecule>();
+
    this->Finalize(runsNormally);
 }
 
@@ -151,7 +153,7 @@ void MolDS::Finalize(bool runsNormally) const{
    this->OutputLog(Utilities::GetFarewellMessage(this->startTime, this->startTick, this->ompStartTime, runsNormally));
 }
 
-void MolDS::CalculateElectronicStructureOnce(Molecule* molecule, bool* runsNormally) const{
+void MolDS::CalculateElectronicStructureOnce(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const{
    try{
       boost::shared_ptr<ElectronicStructure> electronicStructure(ElectronicStructureFactory::Create());
       electronicStructure->SetMolecule(molecule);
@@ -166,7 +168,7 @@ void MolDS::CalculateElectronicStructureOnce(Molecule* molecule, bool* runsNorma
    }
 }
 
-void MolDS::DoMC(Molecule* molecule, bool* runsNormally) const{
+void MolDS::DoMC(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const{
    try{
       boost::shared_ptr<MolDS_mc::MC> mc(new MolDS_mc::MC());
       mc->SetMolecule(molecule);
@@ -178,7 +180,7 @@ void MolDS::DoMC(Molecule* molecule, bool* runsNormally) const{
    }
 }
 
-void MolDS::DoMD(Molecule* molecule, bool* runsNormally) const{
+void MolDS::DoMD(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const{
    try{
       boost::shared_ptr<MolDS_md::MD> md(new MolDS_md::MD());
       md->SetMolecule(molecule);
@@ -190,10 +192,10 @@ void MolDS::DoMD(Molecule* molecule, bool* runsNormally) const{
    }
 }
 
-void MolDS::DoRPMD(Molecule* molecule, bool* runsNormally) const{
+void MolDS::DoRPMD(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const{
    try{
       boost::shared_ptr<MolDS_rpmd::RPMD> rpmd(new MolDS_rpmd::RPMD());
-      rpmd->DoRPMD(*molecule);
+      rpmd->DoRPMD(*molecule.get());
    }
    catch(MolDSException ex){
       this->OutputLog(boost::format("%s\n") % ex.what());
@@ -201,10 +203,10 @@ void MolDS::DoRPMD(Molecule* molecule, bool* runsNormally) const{
    }
 }
 
-void MolDS::DoNASCO(Molecule* molecule, bool* runsNormally) const{
+void MolDS::DoNASCO(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const{
    try{
       boost::shared_ptr<MolDS_nasco::NASCO> nasco(new MolDS_nasco::NASCO());
-      nasco->DoNASCO(*molecule);
+      nasco->DoNASCO(molecule);
    }
    catch(MolDSException ex){
       this->OutputLog(boost::format("%s\n") % ex.what());
@@ -212,10 +214,10 @@ void MolDS::DoNASCO(Molecule* molecule, bool* runsNormally) const{
    }
 }
 
-void MolDS::OptimizeGeometry(Molecule* molecule, bool* runsNormally) const{
+void MolDS::OptimizeGeometry(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const{
    try{
       boost::shared_ptr<MolDS_optimization::Optimizer> optimizer(OptimizerFactory::Create());
-      optimizer->Optimize(*molecule);
+      optimizer->Optimize(molecule);
    }
    catch(MolDSException ex){
       this->OutputLog(boost::format("%s\n") % ex.what());
@@ -223,7 +225,7 @@ void MolDS::OptimizeGeometry(Molecule* molecule, bool* runsNormally) const{
    }
 }
 
-void MolDS::DiagonalizePrincipalAxes(Molecule* molecule, bool* runsNormally) const{
+void MolDS::DiagonalizePrincipalAxes(IMolecule* molecule, bool* runsNormally) const{
    try{
       molecule->CalcPrincipalAxes();
    }
@@ -233,7 +235,7 @@ void MolDS::DiagonalizePrincipalAxes(Molecule* molecule, bool* runsNormally) con
    }
 }
 
-void MolDS::TranslateMolecule(Molecule* molecule, bool* runsNormally) const{
+void MolDS::TranslateMolecule(IMolecule* molecule, bool* runsNormally) const{
    try{
       molecule->Translate();
    }
@@ -243,7 +245,7 @@ void MolDS::TranslateMolecule(Molecule* molecule, bool* runsNormally) const{
    }
 }
 
-void MolDS::RotateMolecule(Molecule* molecule, bool* runsNormally) const{
+void MolDS::RotateMolecule(IMolecule* molecule, bool* runsNormally) const{
    try{
       molecule->Rotate();
    }

@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -27,7 +28,7 @@ class Mndo : public MolDS_zindo::ZindoS{
 public:
    Mndo();
    virtual ~Mndo();
-   virtual void SetMolecule(MolDS_base::Molecule* molecule);
+   virtual void SetMolecule(const boost::shared_ptr<MolDS_base::IMolecule>& molecule);
    virtual void OutputSCFResults() const;
 protected:
    std::string errorMessageGetSemiEmpiricalMultipoleInteractionBadMultipoles;
@@ -47,7 +48,7 @@ protected:
    virtual void SetMessages();
    virtual void SetEnableAtomTypes();
    virtual void CalcSCFProperties();
-   virtual void CalcNormalModes(double** normalModes, double* normalForceConstants, const MolDS_base::Molecule& molecule) const;
+   virtual void CalcNormalModes(double** normalModes, double* normalForceConstants, const MolDS_base::IMolecule& molecule) const;
    virtual void CalcForce(const std::vector<int>& elecStates);
    virtual double GetDiatomCoreRepulsionEnergy(int indexAtomA, int indexAtomB) const;
    virtual double GetDiatomCoreRepulsion1stDerivative(int indexAtomA,
@@ -60,7 +61,7 @@ protected:
    virtual double GetFockDiagElement(const MolDS_base_atoms::Atom& atomA, 
                                      int indexAtomA, 
                                      int mu, 
-                                     const MolDS_base::Molecule& molecule, 
+                                     const MolDS_base::IMolecule& molecule,
                                      double const* const* gammaAB,
                                      double const* const* orbitalElectronPopulation, 
                                      double const* atomicElectronPopulation,
@@ -71,7 +72,7 @@ protected:
                                         int indexAtomA, 
                                         int indexAtomB, 
                                         int mu, int nu, 
-                                        const MolDS_base::Molecule& molecule, 
+                                        const MolDS_base::IMolecule& molecule,
                                         double const* const* gammaAB, 
                                         double const* const* overelap,
                                         double const* const* orbitalElectronPopulation, 
@@ -93,12 +94,12 @@ protected:
                                  MolDS_base::OrbitalType orbital2, 
                                  const MolDS_base_atoms::Atom& atom) const; 
    virtual void CalcTwoElecTwoCore(double****** twoElecTwoCore, 
-                                   const MolDS_base::Molecule& molecule) const;
+                                   const MolDS_base::IMolecule& molecule) const;
    virtual double GetMolecularIntegralElement(int moI, 
                                               int moJ, 
                                               int moK, 
                                               int moL, 
-                                              const MolDS_base::Molecule& molecule, 
+                                              const MolDS_base::IMolecule& molecule,
                                               double const* const* fockMatrix, 
                                               double const* const* gammaAB) const;
    virtual void CalcCISMatrix(double** matrixCIS) const;
@@ -324,7 +325,7 @@ private:
    void FreeTempMatricesSolveCPHF(double*** matrixCPHF,
                                   int dimensionCPHF) const;
    void CalcHeatsFormation(double* heatsFormation, 
-                           const MolDS_base::Molecule& molecule) const;
+                           const MolDS_base::IMolecule& molecule) const;
    double GetElectronCoreAttraction(int indexAtomA, 
                                     int indexAtomB, 
                                     int mu, 

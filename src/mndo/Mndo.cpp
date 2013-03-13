@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -93,7 +94,7 @@ Mndo::~Mndo(){
                                               CartesianType_end*molecule->GetNumberAtoms());
 }
 
-void Mndo::SetMolecule(Molecule* molecule){
+void Mndo::SetMolecule(const boost::shared_ptr<IMolecule>& molecule){
    Cndo2::SetMolecule(molecule);
    MallocerFreer::GetInstance()->Malloc<double>(&this->twoElecTwoCore,
                                                 molecule->GetNumberAtoms(),
@@ -346,7 +347,7 @@ double Mndo::GetDiatomCoreRepulsion2ndDerivative(int indexAtomA,
 }
 
 void Mndo::CalcHeatsFormation(double* heatsFormation, 
-                              const Molecule& molecule) const{
+                              const IMolecule& molecule) const{
    int groundState = 0;
    *heatsFormation = this->GetElectronicEnergy(groundState);
    for(int A=0; A<molecule.GetNumberAtoms(); A++){
@@ -362,7 +363,7 @@ void Mndo::CalcSCFProperties(){
  
 }
 
-void Mndo::CalcNormalModes(double** normalModes, double* normalForceConstants, const Molecule& molecule) const{
+void Mndo::CalcNormalModes(double** normalModes, double* normalForceConstants, const IMolecule& molecule) const{
    bool isMassWeighted = true;
    this->CalcHessianSCF(normalModes, isMassWeighted);
    bool calcEigenVectors = true;
@@ -386,7 +387,7 @@ void Mndo::OutputSCFResults() const{
 double Mndo::GetFockDiagElement(const Atom& atomA, 
                                 int indexAtomA, 
                                 int mu, 
-                                const Molecule& molecule, 
+                                const IMolecule& molecule,
                                 double const* const* gammaAB,
                                 double const* const* orbitalElectronPopulation, 
                                 double const* atomicElectronPopulation,
@@ -446,7 +447,7 @@ double Mndo::GetFockOffDiagElement(const Atom& atomA,
                                    int indexAtomB, 
                                    int mu, 
                                    int nu, 
-                                   const Molecule& molecule, 
+                                   const IMolecule& molecule,
                                    double const* const* gammaAB, 
                                    double const* const* overlapAOs,
                                    double const* const* orbitalElectronPopulation, 
@@ -633,7 +634,7 @@ void Mndo::CalcDiatomicOverlapAOs2ndDerivativeInDiatomicFrame(double** diatomicO
 
 // The order of mol, moJ, moK, moL is consistent with Eq. (9) in [RZ_1973]
 double Mndo::GetMolecularIntegralElement(int moI, int moJ, int moK, int moL, 
-                                         const Molecule& molecule, 
+                                         const IMolecule& molecule,
                                          double const* const* fockMatrix, 
                                          double const* const* gammaAB) const{
    double value = 0.0;
@@ -3713,7 +3714,7 @@ void Mndo::FreeTempMatricesCalcForce(double**** diatomicOverlapAOs1stDerivs, dou
 }
 
 void Mndo::CalcTwoElecTwoCore(double****** twoElecTwoCore, 
-                              const Molecule& molecule) const{
+                              const IMolecule& molecule) const{
 #ifdef MOLDS_DBG
    if(twoElecTwoCore == NULL){
       throw MolDSException(this->errorMessageCalcTwoElecTwoCoreNullMatrix);

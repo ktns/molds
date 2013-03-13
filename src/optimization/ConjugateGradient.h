@@ -30,14 +30,14 @@ protected:
 private:
    std::string messageStartConjugateGradientStep;
    void SearchMinimum(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure,
-                      MolDS_base::Molecule& molecule,
+                      MolDS_base::IMolecule& molecule,
                       double* lineSearchedEnergy,
                       bool* obainesOptimizedStructure) const;
    void UpdateSearchDirection(double*** matrixForce, 
                               double** oldMatrixForce, 
                               double** matrixSearchDirection,
                               boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure,
-                              const MolDS_base::Molecule& molecule,
+                              const MolDS_base::IMolecule& molecule,
                               int elecState) const;
 };
 

@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -33,7 +34,7 @@ protected:
    virtual double GetFockDiagElement(const MolDS_base_atoms::Atom& atomA, 
                                      int indexAtomA, 
                                      int mu, 
-                                     const MolDS_base::Molecule& molecule, 
+                                     const MolDS_base::IMolecule& molecule,
                                      double const* const* gammaAB,
                                      double const* const* orbitalElectronPopulation, 
                                      double const* atomicElectronPopulation,
@@ -45,14 +46,14 @@ protected:
                                         int indexAtomB, 
                                         int mu, 
                                         int nu, 
-                                        const MolDS_base::Molecule& molecule, 
+                                        const MolDS_base::IMolecule& molecule,
                                         double const* const* gammaAB, 
                                         double const* const* overelap,
                                         double const* const* orbitalElectronPopulation,
                                         double const* const* const* const* const* const* twoElecTwoCore,
                                         bool isGuess) const;
    virtual double GetMolecularIntegralElement(int moI, int moJ, int moK, int moL, 
-                                              const MolDS_base::Molecule& molecule, 
+                                              const MolDS_base::IMolecule& molecule,
                                               double const* const* fockMatrix, 
                                               double const* const* gammaAB) const;
 private:

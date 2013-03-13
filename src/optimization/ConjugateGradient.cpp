@@ -63,7 +63,7 @@ void ConjugateGradient::SetMessages(){
 }
 
 void ConjugateGradient::SearchMinimum(boost::shared_ptr<ElectronicStructure> electronicStructure,
-                                      Molecule& molecule,
+                                      IMolecule& molecule,
                                       double* lineSearchedEnergy,
                                       bool* obtainesOptimizedStructure) const{
    int    elecState            = Parameters::GetInstance()->GetElectronicStateIndexOptimization();
@@ -130,7 +130,7 @@ void ConjugateGradient::UpdateSearchDirection(double*** matrixForce,
                                               double** oldMatrixForce, 
                                               double** matrixSearchDirection,
                                               boost::shared_ptr<ElectronicStructure> electronicStructure, 
-                                              const MolDS_base::Molecule& molecule,
+                                              const MolDS_base::IMolecule& molecule,
                                               int elecState) const{
    for(int a=0;a<molecule.GetNumberAtoms();a++){
       for(int i=0; i<CartesianType_end; i++){

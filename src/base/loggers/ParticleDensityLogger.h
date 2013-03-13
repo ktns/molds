@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -22,7 +23,7 @@ namespace MolDS_base_loggers{
 
 class ParticleDensityLogger: public DensityLogger{
 public:
-   ParticleDensityLogger(const MolDS_base::Molecule& molecule, 
+   ParticleDensityLogger(const MolDS_base::IMolecule& molecule,
                          double const* const* fockMatrix, 
                          double const* const* cisMatrix, 
                          MolDS_base::TheoryType theory);

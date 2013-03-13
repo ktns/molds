@@ -27,7 +27,7 @@ class InputParser: public PrintController, private Uncopyable{
 public:
    static InputParser* GetInstance();
    static void DeleteInstance();
-   void Parse(Molecule* molecule, int argc, char *argv[]) const;
+   void Parse(IMolecule* molecule, int argc, char *argv[]) const;
 private:
    static InputParser* inputParser;
    InputParser();
@@ -291,16 +291,16 @@ private:
    std::string stringFrequencies;
    std::string stringFrequenciesEnd;
    std::string stringFrequenciesElecState;
-   void CalcMolecularBasics(Molecule* molecule) const;
+   void CalcMolecularBasics(IMolecule* molecule) const;
    void ValidateVdWConditions() const;
-   void ValidateCisConditions(const Molecule& molecule) const;
-   void ValidateMdConditions(const Molecule& molecule) const;
-   void ValidateMcConditions(const Molecule& molecule) const;
-   void ValidateRpmdConditions(const Molecule& molecule) const;
-   void ValidateNascoConditions(const Molecule& molecule) const;
-   void ValidateOptimizationConditions(const Molecule& molecule) const;
+   void ValidateCisConditions(const IMolecule& molecule) const;
+   void ValidateMdConditions(const IMolecule& molecule) const;
+   void ValidateMcConditions(const IMolecule& molecule) const;
+   void ValidateRpmdConditions(const IMolecule& molecule) const;
+   void ValidateNascoConditions(const IMolecule& molecule) const;
+   void ValidateOptimizationConditions(const IMolecule& molecule) const;
    void ValidateFrequenciesConditions() const;
-   void OutputMolecularBasics(Molecule* molecule) const;
+   void OutputMolecularBasics(IMolecule* molecule) const;
    void OutputScfConditions() const;
    void OutputMemoryConditions() const;
    void OutputCisConditions() const;
@@ -319,7 +319,7 @@ private:
    void StoreInputTermsFromRedirect(std::vector<std::string>& inputTerms) const;
    void StoreInputTermsFromFile(std::vector<std::string>& inputTerms, char* fileName) const;
    void AddInputTermsFromString(std::vector<std::string>& inputTerms, std::string str) const;
-   int ParseMolecularGeometry(Molecule* molecule, std::vector<std::string>* inputTerms, int parseIndex) const;
+   int ParseMolecularGeometry(IMolecule* molecule, std::vector<std::string>* inputTerms, int parseIndex) const;
    int ParseTheory(std::vector<std::string>* inputTerms, int parseIndex) const;
    int ParseConditionsSCF(std::vector<std::string>* inputTerms, int parseIndex) const;
    int ParseConditionsPrincipalAxes(std::vector<std::string>* inputTerms, int parseIndex) const;

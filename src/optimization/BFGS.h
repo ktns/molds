@@ -45,7 +45,7 @@ private:
    std::string formatIncreaseScalingFactor;
 
    virtual void SearchMinimum(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure,
-                              MolDS_base::Molecule& molecule,
+                              MolDS_base::IMolecule& molecule,
                               double* lineSearchedEnergy,
                               bool* obainesOptimizedStructure) const;
    void CalcRFOStep(double* vectorStep,
@@ -59,7 +59,7 @@ private:
                       double const* vectorOldForce,
                       double const* vectorDisplacement) const;
    void ShiftHessianRedundantMode(double** matrixHessian,
-                                  const MolDS_base::Molecule& molecule) const;
+                                  const MolDS_base::IMolecule& molecule) const;
 };
 
 }

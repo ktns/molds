@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -27,7 +28,7 @@ class MC : public MolDS_base::PrintController{
 public:
    MC();
    ~MC();
-   void SetMolecule(MolDS_base::Molecule* molecule);
+   void SetMolecule(const boost::shared_ptr<MolDS_base::IMolecule>& molecule);
    void DoMC();
    void DoMC(int totalSteps, int elecState, double temperature, double stepWidth, unsigned long seed);
 private:
@@ -46,10 +47,10 @@ private:
    std::string messageTransitionRate;
    std::string errorMessageNotEnebleExcitedTheoryType;
    std::string errorMessageTheoryType;
-   MolDS_base::Molecule* molecule;
+   boost::shared_ptr<MolDS_base::IMolecule> molecule;
    void SetMessages();
-   void CreateTrialConfiguration(MolDS_base::Molecule* trial,
-                                 const MolDS_base::Molecule& current,
+   void CreateTrialConfiguration(MolDS_base::IMolecule* trial,
+                                 const MolDS_base::IMolecule& current,
                                  boost::random::variate_generator<
                                     boost::random::mt19937&,
                                     boost::uniform_real<>
@@ -64,7 +65,7 @@ private:
                   > (*realRand),
                   double temperature) const;
    void OutputMolecule(const MolDS_base::ElectronicStructure& electronicStructure,
-                       const MolDS_base::Molecule& molecule,
+                       const MolDS_base::IMolecule& molecule,
                        int elecState) const;
    void OutputEnergies(const MolDS_base::ElectronicStructure& electronicStructure,
                        int elecState) const;

@@ -97,7 +97,7 @@ void BFGS::SetMessages(){
 }
 
 void BFGS::SearchMinimum(boost::shared_ptr<ElectronicStructure> electronicStructure,
-                         Molecule& molecule,
+                         IMolecule& molecule,
                          double* lineSearchedEnergy,
                          bool* obtainesOptimizedStructure) const {
    int elecState = Parameters::GetInstance()->GetElectronicStateIndexOptimization();
@@ -406,7 +406,7 @@ void BFGS::UpdateHessian(double **matrixHessian,
 // Level shift eigenvalues of redandant modes to largeEigenvalue
 
 void BFGS::ShiftHessianRedundantMode(double** matrixHessian,
-                                     const Molecule& molecule) const{
+                                     const IMolecule& molecule) const{
    const double one                      = 1;
    const double largeEigenvalue          = 1.0e3;
    const int    numAtoms                 = molecule.GetNumberAtoms();

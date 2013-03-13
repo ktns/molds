@@ -1,6 +1,7 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
 // Copyright (C) 2012-2013 Michihiro Okuyama
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -28,7 +29,7 @@ class Cndo2 : public MolDS_base::ElectronicStructure{
 public:
    Cndo2();
    virtual ~Cndo2();
-   virtual void SetMolecule(MolDS_base::Molecule* molecule);
+   virtual void SetMolecule(const boost::shared_ptr<MolDS_base::IMolecule>& molecule);
    void DoSCF(bool requiresGuess=true);
    virtual void OutputSCFResults() const;
    double const* const* GetFockMatrix() const;
@@ -43,7 +44,7 @@ public:
    double GetCoreRepulsionEnergy() const;
    double GetVdWCorrectionEnergy() const;
    void CalcOverlapAOsWithAnotherConfiguration(double** overlapAOs,
-                                               const MolDS_base::Molecule& lhsMolecule) const;
+                                               const MolDS_base::IMolecule& lhsMolecule) const;
    void CalcOverlapMOsWithAnotherElectronicStructure(double** overlapMOs,
                                                      double const* const* overlapAOs,
                                                      const MolDS_base::ElectronicStructure& lhsElectronicStructure) const;
@@ -91,7 +92,7 @@ protected:
    std::string messageUnpairedAtomsTitle;
    std::string messageUnitSec; 
    std::vector<MolDS_base::AtomType> enableAtomTypes;
-   MolDS_base::Molecule* molecule;
+   boost::shared_ptr<MolDS_base::IMolecule> molecule;
    MolDS_base::TheoryType theory;
    double       coreRepulsionEnergy;
    double       vdWCorrectionEnergy;
@@ -118,13 +119,13 @@ protected:
    virtual void SetEnableAtomTypes();
    virtual void CalcSCFProperties();
    virtual void CalcCISProperties();
-   virtual void CalcNormalModes(double** normalModes, double* normalForceConstants, const MolDS_base::Molecule& molecule) const;
+   virtual void CalcNormalModes(double** normalModes, double* normalForceConstants, const MolDS_base::IMolecule& molecule) const;
    virtual void CalcElectronicTransitionDipoleMoment(double* transitionDipoleMoment,
                                                      int to, int from,
                                                      double const* const* fockMatrix,
                                                      double const* const* matrixCIS,
                                                      double const* const* const* cartesianMatrix,
-                                                     const MolDS_base::Molecule& molecule, 
+                                                     const MolDS_base::IMolecule& molecule,
                                                      double const* const* orbitalElectronPopulation,
                                                      double const* const* overlapAOs,
                                                      double const* groundStateDipole) const;
@@ -162,11 +163,11 @@ protected:
    void CalcRotatingMatrix(double** rotatingMatrix, 
                            const MolDS_base_atoms::Atom& atomA, 
                            const MolDS_base_atoms::Atom& atomB) const;
-   virtual void CalcGammaAB(double** gammaAB, const MolDS_base::Molecule& molecule) const;
+   virtual void CalcGammaAB(double** gammaAB, const MolDS_base::IMolecule& molecule) const;
    virtual double GetFockDiagElement(const MolDS_base_atoms::Atom& atomA, 
                                      int indexAtomA, 
                                      int mu, 
-                                     const MolDS_base::Molecule& molecule, 
+                                     const MolDS_base::IMolecule& molecule,
                                      double const* const* gammaAB,
                                      double const* const* orbitalElectronPopulation, 
                                      double const* atomicElectronPopulation,
@@ -178,7 +179,7 @@ protected:
                                         int indexAtomB, 
                                         int mu, 
                                         int nu, 
-                                        const MolDS_base::Molecule& molecule, 
+                                        const MolDS_base::IMolecule& molecule,
                                         double const* const* gammaAB, 
                                         double const* const* overlapAOs,
                                         double const* const* orbitalElectronPopulation, 
@@ -212,11 +213,11 @@ protected:
                                                          double* cartesian,
                                                          double rAB) const;
    virtual double GetMolecularIntegralElement(int moI, int moJ, int moK, int moL, 
-                                              const MolDS_base::Molecule& molecule, 
+                                              const MolDS_base::IMolecule& molecule,
                                               double const* const* fockMatrix, 
                                               double const* const* gammaAB) const;
    virtual void CalcTwoElecTwoCore(double****** twoElecTwoCore, 
-                                   const MolDS_base::Molecule& molecule) const;
+                                   const MolDS_base::IMolecule& molecule) const;
    virtual void CalcForce(const std::vector<int>& elecStates);
    void CalcRotatingMatrix1stDerivatives(double*** rotMat1stDerivatives, 
                                          const MolDS_base_atoms::Atom& atomA,
@@ -312,7 +313,7 @@ private:
    void OutputSCFMulliken() const;
    void OutputNormalModes(double const* const* normalModes, 
                           double const* normalForceConstants, 
-                          const MolDS_base::Molecule& molecule) const;
+                          const MolDS_base::IMolecule& molecule) const;
    void CalcCoreRepulsionEnergy();
    void CalcVdWCorrectionEnergy();
    double GetVdwDampingValue(double vdWDistance, double distance) const;
@@ -320,7 +321,7 @@ private:
    double GetVdwDampingValue2ndDerivative(double vdWDistance, double distance) const;
    void CalcElectronicDipoleMomentGroundState(double*** electronicTransitionDipoleMoments,
                                               double const* const* const* cartesianMatrix,
-                                              const MolDS_base::Molecule& molecule, 
+                                              const MolDS_base::IMolecule& molecule,
                                               double const* const* orbitalElectronPopulation,
                                               double const* const* overlapAOs) const;
    bool SatisfyConvergenceCriterion(double const* const* oldOrbitalElectronPopulation, 
@@ -335,15 +336,15 @@ private:
                                            double const* const* orbitalElectronPopulation,
                                            int numberAOs) const;
    void CalcOrbitalElectronPopulation(double** orbitalElectronPopulation, 
-                                      const MolDS_base::Molecule& molecule, 
+                                      const MolDS_base::IMolecule& molecule,
                                       double const* const* fockMatrix) const;
    void CalcAtomicElectronPopulation(double* atomicElectronPopulation,
                                      double const* const* orbitalElectronPopulation, 
-                                     const MolDS_base::Molecule& molecule) const;
+                                     const MolDS_base::IMolecule& molecule) const;
    void CalcCoreDipoleMoment(double* coreDipoleMoment,
-                       const MolDS_base::Molecule& molecule) const;
+                       const MolDS_base::IMolecule& molecule) const;
    void CalcCartesianMatrixByGTOExpansion(double*** cartesianMatrix,
-                                          const MolDS_base::Molecule& molecule, 
+                                          const MolDS_base::IMolecule& molecule,
                                           MolDS_base::STOnGType stonG) const; 
    void CalcCartesianMatrixElementsByGTOExpansion(double& xComponent,
                                                   double& yComponent,
@@ -374,9 +375,9 @@ private:
                                      double rAB,
                                      double ovelapSASB,
                                      MolDS_base::CartesianType axis) const;
-   void CalcOverlapAOs(double** overlapAOs, const MolDS_base::Molecule& molecule) const;
+   void CalcOverlapAOs(double** overlapAOs, const MolDS_base::IMolecule& molecule) const;
    void CalcOverlapAOsByGTOExpansion(double** overlapAOs, 
-                                     const MolDS_base::Molecule& molecule, 
+                                     const MolDS_base::IMolecule& molecule,
                                      MolDS_base::STOnGType stonG) const; //See [DY_1977]
    double GetOverlapAOsElementByGTOExpansion(const MolDS_base_atoms::Atom& atomA, 
                                              int valenceIndexA, 
@@ -419,7 +420,7 @@ private:
                                              double rAB, 
                                              MolDS_base::CartesianType axisA) const;// see [DY_1977]
    void CalcFockMatrix(double** fockMatrix, 
-                       const MolDS_base::Molecule& molecule, 
+                       const MolDS_base::IMolecule& molecule,
                        double const* const* overlapAOs, 
                        double const* const* gammaAB,
                        double const* const* orbitalElectronPopulation, 
@@ -444,7 +445,7 @@ private:
                bool&  hasAppliedDamping,
                double** orbitalElectronPopulation, 
                double const* const* oldOrbitalElectronPopulation, 
-               const MolDS_base::Molecule& molecule) const;
+               const MolDS_base::IMolecule& molecule) const;
    void DoDIIS(double** orbitalElectronPopulation,
                double const* const* oldOrbitalElectronPopulation,
                double*** diisStoredDensityMatrix,
@@ -454,14 +455,14 @@ private:
                double&   diisError,
                bool&     hasAppliedDIIS,
                int       diisNumErrorVect,
-               const MolDS_base::Molecule& molecule, 
+               const MolDS_base::IMolecule& molecule,
                int step) const;
-   void CheckEnableAtomType(const MolDS_base::Molecule& molecule) const;
-   void CheckNumberValenceElectrons(const MolDS_base::Molecule& molecule) const;
+   void CheckEnableAtomType(const MolDS_base::IMolecule& molecule) const;
+   void CheckNumberValenceElectrons(const MolDS_base::IMolecule& molecule) const;
    void FreeDiatomicOverlapAOsAndRotatingMatrix(double*** diatomicOverlapAOs, 
                                                 double*** rotatingMatrix) const;
    void CalcElecSCFEnergy(double* elecSCFEnergy, 
-                          const MolDS_base::Molecule& molecule, 
+                          const MolDS_base::IMolecule& molecule,
                           double const* energiesMO, 
                           double const* const* fockMatrix, 
                           double const* const* gammaAB, 

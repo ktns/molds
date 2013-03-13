@@ -1,6 +1,7 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
 // Copyright (C) 2012-2013 Michihiro Okuyama
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -182,7 +183,7 @@ void ZindoS::SetEnableAtomTypes(){
 double ZindoS::GetFockDiagElement(const Atom& atomA, 
                                   int indexAtomA, 
                                   int mu, 
-                                  const Molecule& molecule, 
+                                  const IMolecule& molecule,
                                   double const* const* gammaAB,
                                   double const* const* orbitalElectronPopulation, 
                                   double const* atomicElectronPopulation,
@@ -251,7 +252,7 @@ double ZindoS::GetFockOffDiagElement(const Atom& atomA,
                                      int indexAtomB, 
                                      int mu, 
                                      int nu, 
-                                     const Molecule& molecule, 
+                                     const IMolecule& molecule,
                                      double const* const* gammaAB, 
                                      double const* const* overlapAOs,
                                      double const* const* orbitalElectronPopulation, 
@@ -283,7 +284,7 @@ double ZindoS::GetFockOffDiagElement(const Atom& atomA,
    return value;
 }
 
-void ZindoS::CalcGammaAB(double** gammaAB, const Molecule& molecule) const{
+void ZindoS::CalcGammaAB(double** gammaAB, const IMolecule& molecule) const{
    // Do nothing;
 }
 
@@ -691,7 +692,7 @@ double ZindoS::GetNishimotoMatagaTwoEleInt1stDerivative(const Atom& atomA,
    return value;
 }
 
-void ZindoS::CalcNishimotoMatagaMatrix(double**** nishimotoMatagaMatrix, const Molecule& molecule) const{
+void ZindoS::CalcNishimotoMatagaMatrix(double**** nishimotoMatagaMatrix, const IMolecule& molecule) const{
    int totalNumberAtoms = molecule.GetNumberAtoms();
    stringstream ompErrors;
 #pragma omp parallel for schedule(auto)
@@ -906,7 +907,7 @@ void ZindoS::CalcOverlapESsWithAnotherElectronicStructure(double** overlapESs,
 
 // The order of moI, moJ, moK, moL is consistent with Eq. (9) in [RZ_1973]
 double ZindoS::GetMolecularIntegralElement(int moI, int moJ, int moK, int moL, 
-                                           const Molecule& molecule, 
+                                           const IMolecule& molecule,
                                            double const* const* fockMatrix, 
                                            double const* const* gammaAB) const{
    double value = 0.0;
@@ -1219,7 +1220,7 @@ void ZindoS::CalcElectronicDipoleMomentsExcitedStates(double*** electronicTransi
                                                       double const* const* fockMatrix,
                                                       double const* const* matrixCIS,
                                                       double const* const* const* cartesianMatrix,
-                                                      const MolDS_base::Molecule& molecule, 
+                                                      const MolDS_base::IMolecule& molecule,
                                                       double const* const* orbitalElectronPopulation,
                                                       double const* const* overlapAOs) const{
    int groundState = 0;
@@ -1243,7 +1244,7 @@ void ZindoS::CalcElectronicTransitionDipoleMoments(double*** electronicTransitio
                                                    double const* const* fockMatrix,
                                                    double const* const* matrixCIS,
                                                    double const* const* const* cartesianMatrix,
-                                                   const MolDS_base::Molecule& molecule, 
+                                                   const MolDS_base::IMolecule& molecule,
                                                    double const* const* orbitalElectronPopulation,
                                                    double const* const* overlapAOs) const{
    int groundState = 0;
@@ -1296,7 +1297,7 @@ void ZindoS::CalcElectronicTransitionDipoleMoment(double* transitionDipoleMoment
                                                   double const* const* fockMatrix,
                                                   double const* const* matrixCIS,
                                                   double const* const* const* cartesianMatrix,
-                                                  const MolDS_base::Molecule& molecule, 
+                                                  const MolDS_base::IMolecule& molecule,
                                                   double const* const* orbitalElectronPopulation,
                                                   double const* const* overlapAOs,
                                                   double const* groundStateDipole) const{
@@ -1488,7 +1489,7 @@ void ZindoS::CalcElectronicTransitionDipoleMoment(double* transitionDipoleMoment
 }
 
 void ZindoS::CalcFreeExcitonEnergies(double** freeExcitonEnergiesCIS, 
-                                     const Molecule& molecule, 
+                                     const IMolecule& molecule,
                                      double const* energiesMO, 
                                      double const* const* matrixCIS,
                                      int matrixCISdimension) const{
@@ -1518,7 +1519,7 @@ void ZindoS::CalcFreeExcitonEnergies(double** freeExcitonEnergiesCIS,
 
 void ZindoS::CalcOrbitalElectronPopulationCIS(double**** orbitalElectronPopulationCIS, 
                                               double const* const* orbitalElectronPopulation, 
-                                              const MolDS_base::Molecule& molecule, 
+                                              const MolDS_base::IMolecule& molecule,
                                               double const* const* fockMatrix,
                                               double const* const* matrixCIS) const{
    if(!Parameters::GetInstance()->RequiresMullikenCIS()){
@@ -1589,7 +1590,7 @@ void ZindoS::CalcOrbitalElectronPopulationCIS(double**** orbitalElectronPopulati
 
 void ZindoS::CalcAtomicElectronPopulationCIS(double*** atomicElectronPopulationCIS,
                                              double const* const* const* orbitalElectronPopulationCIS, 
-                                             const Molecule& molecule) const{
+                                             const IMolecule& molecule) const{
    if(!Parameters::GetInstance()->RequiresMullikenCIS()){
       return;
    }
@@ -1632,7 +1633,7 @@ void ZindoS::CalcAtomicElectronPopulationCIS(double*** atomicElectronPopulationC
 
 void ZindoS::CalcAtomicUnpairedPopulationCIS(double*** atomicUnpairedPopulationCIS,
                                              double const* const* const* orbitalElectronPopulationCIS, 
-                                             const Molecule& molecule) const{
+                                             const IMolecule& molecule) const{
    if(!Parameters::GetInstance()->RequiresMullikenCIS()){
       return;
    }
@@ -2316,7 +2317,7 @@ void ZindoS::CalcCISMatrix(double** matrixCIS) const{
 
 double ZindoS::GetCISDiagElement(double const* energiesMO,
                                  double const* const* const* const* nishimotoMatagaMatrix,
-                                 const MolDS_base::Molecule& molecule,
+                                 const MolDS_base::IMolecule& molecule,
                                  double const* const* fockMatrix, 
                                  int moI,
                                  int moA) const{
@@ -2407,7 +2408,7 @@ double ZindoS::GetCISDiagElement(double const* energiesMO,
 }
 
 double ZindoS::GetCISOffDiagElement(double const* const* const* const* nishimotoMatagaMatrix,
-                                    const MolDS_base::Molecule& molecule,
+                                    const MolDS_base::IMolecule& molecule,
                                     double const* const* fockMatrix, 
                                     int moI,
                                     int moA,
@@ -2536,13 +2537,13 @@ int ZindoS::GetSlaterDeterminantIndex(int activeOccIndex,
 }
 
 // This returns an index of occupied MO. Generally, This index=0 means the lowest energy MO;
-int ZindoS::GetActiveOccIndex(const MolDS_base::Molecule& molecule, int matrixCISIndex) const{
+int ZindoS::GetActiveOccIndex(const MolDS_base::IMolecule& molecule, int matrixCISIndex) const{
    return molecule.GetTotalNumberValenceElectrons()/2 
          -(matrixCISIndex/Parameters::GetInstance()->GetActiveVirCIS()) -1;
 }
 
 // This returns an index of virtual MO. Generally, This index=0 means the lowest energy MO;
-int ZindoS::GetActiveVirIndex(const MolDS_base::Molecule& molecule, int matrixCISIndex) const{
+int ZindoS::GetActiveVirIndex(const MolDS_base::IMolecule& molecule, int matrixCISIndex) const{
    return molecule.GetTotalNumberValenceElectrons()/2
          +(matrixCISIndex%Parameters::GetInstance()->GetActiveVirCIS());
 }

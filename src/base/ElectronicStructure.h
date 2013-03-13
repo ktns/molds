@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -24,7 +25,7 @@ class ElectronicStructure : public MolDS_base::PrintController{
 public:
    virtual ~ElectronicStructure(){};
    virtual MolDS_base::TheoryType GetTheoryType() const = 0;
-   virtual void SetMolecule(MolDS_base::Molecule* molecule) = 0;
+   virtual void SetMolecule(const boost::shared_ptr<MolDS_base::IMolecule>& molecule) = 0;
    virtual void DoSCF(bool requiresGuess=true) = 0;
    virtual void OutputSCFResults() const = 0;
    virtual double const* const* GetFockMatrix() const = 0;
@@ -39,7 +40,7 @@ public:
    virtual double GetCoreRepulsionEnergy() const = 0;
    virtual double GetVdWCorrectionEnergy() const = 0;
    virtual void CalcOverlapAOsWithAnotherConfiguration(double** overlapAOs, 
-                                                       const MolDS_base::Molecule& lhsMoledule) const = 0;
+                                                       const MolDS_base::IMolecule& lhsMoledule) const = 0;
    virtual void CalcOverlapMOsWithAnotherElectronicStructure(double** overlapMOs, 
                                                              double const* const* overlapAOs,
                                                              const MolDS_base::ElectronicStructure& lhsElectronicStructure) const = 0;

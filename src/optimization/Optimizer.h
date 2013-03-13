@@ -25,29 +25,29 @@ class Optimizer : public MolDS_base::PrintController{
 public:
    Optimizer();
    virtual ~Optimizer();
-   void Optimize(MolDS_base::Molecule& molecule);
+   void Optimize(const boost::shared_ptr<MolDS_base::IMolecule>& molecule);
 protected:
    std::string errorMessageNotEnebleTheoryType;
    std::string errorMessageGeometyrOptimizationNotConverged;
    std::string messageLineSearchSteps;
    virtual void SetMessages();
-   void UpdateMolecularCoordinates(MolDS_base::Molecule& molecule, double const* const* matrixForce, double dt) const;
-   void UpdateMolecularCoordinates(MolDS_base::Molecule& molecule, double const* const* matrixForce) const;
+   void UpdateMolecularCoordinates(MolDS_base::IMolecule& molecule, double const* const* matrixForce, double dt) const;
+   void UpdateMolecularCoordinates(MolDS_base::IMolecule& molecule, double const* const* matrixForce) const;
    void UpdateElectronicStructure(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure, 
-                                  MolDS_base::Molecule& molecule,
+                                  MolDS_base::IMolecule& molecule,
                                   bool requireGuess, 
                                   bool printsLogs) const;
    bool SatisfiesConvergenceCriterion(double** matrixForce, 
-                                      const MolDS_base::Molecule& molecule,
+                                      const MolDS_base::IMolecule& molecule,
                                       double oldEnergy,
                                       double currentEnergy,
                                       double maxGradientThreshold,
                                       double rmsGradientThreshold) const;
    void OutputMoleculeElectronicStructure(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure, 
-                                          MolDS_base::Molecule& molecule,
+                                          MolDS_base::IMolecule& molecule,
                                           bool printsLogs) const;
    void LineSearch(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure,
-                   MolDS_base::Molecule& molecule,
+                   MolDS_base::IMolecule& molecule,
                    double &lineSearchCurrentEnergy,
                    double const* const* matrixForce,
                    int elecState,
@@ -67,9 +67,9 @@ private:
    std::vector<MolDS_base::TheoryType> enableTheoryTypes;
    void SetEnableTheoryTypes();
    void CheckEnableTheoryType(MolDS_base::TheoryType theoryType) const;
-   void ClearMolecularMomenta(MolDS_base::Molecule& molecule) const;
+   void ClearMolecularMomenta(MolDS_base::IMolecule& molecule) const;
    virtual void SearchMinimum(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure,
-                              MolDS_base::Molecule& molecule,
+                              MolDS_base::IMolecule& molecule,
                               double* lineSearchedEnergy,
                               bool* obainesOptimizedStructure) const = 0;
 };

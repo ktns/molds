@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -44,8 +45,7 @@ using namespace MolDS_base_atoms;
 using namespace MolDS_base_factories;
 
 namespace MolDS_mc{
-MC::MC(){
-   this->molecule = NULL;
+MC::MC():molecule(){
    this->SetMessages();
    //this->OutputLog("MC created \n");
 }
@@ -54,7 +54,7 @@ MC::~MC(){
    //this->OutputLog("MC deleted\n");
 }
 
-void MC::SetMolecule(Molecule* molecule){
+void MC::SetMolecule(const boost::shared_ptr<IMolecule>& molecule){
    this->molecule = molecule;
 }
 
@@ -91,12 +91,12 @@ void MC::DoMC(int totalSteps, int elecState, double temperature, double stepWidt
 	boost::variate_generator<boost::mt19937&, boost::uniform_real<> > realRand( realGenerator, range );
 
    // prepare trial molecule and electronic structure pointa
-   Molecule trialMolecule(*this->molecule);
+   boost::shared_ptr<IMolecule> trialMolecule = this->molecule->Clone();
    boost::shared_ptr<ElectronicStructure> electronicStructure2(ElectronicStructureFactory::Create());
    ElectronicStructure* trialES = electronicStructure2.get();
-   trialES->SetMolecule(&trialMolecule);
+   trialES->SetMolecule(trialMolecule);
    trialES->SetCanOutputLogs(this->CanOutputLogs());
-   trialMolecule.SetCanOutputLogs(this->CanOutputLogs());
+   trialMolecule->SetCanOutputLogs(this->CanOutputLogs());
 
    // initial calculation
    boost::shared_ptr<ElectronicStructure> electronicStructure1(ElectronicStructureFactory::Create());
@@ -115,7 +115,7 @@ void MC::DoMC(int totalSteps, int elecState, double temperature, double stepWidt
    for(int s=0; s<totalSteps; s++){
       this->OutputLog(boost::format("%s%d\n\n") % this->messageStartStepMC.c_str() % (s+1) );
       // create trial molecule
-      this->CreateTrialConfiguration(&trialMolecule, *this->molecule, &realRand, stepWidth);
+      this->CreateTrialConfiguration(trialMolecule.get(), *this->molecule, &realRand, stepWidth);
      
       // calculate trilal electronic structure
       bool requireGuess = (s==0) ? true : false;
@@ -126,14 +126,14 @@ void MC::DoMC(int totalSteps, int elecState, double temperature, double stepWidt
 
       // which Electronic Structure is used?
       if(UsesTrial(*currentES, *trialES, elecState, &realRand, temperature)){
-         this->molecule->SynchronizeConfigurationTo(trialMolecule);
+         this->molecule->SynchronizeConfigurationTo(*trialMolecule.get());
          swap(currentES, trialES);
          currentES->SetMolecule(this->molecule);
-         trialES->SetMolecule(&trialMolecule);
+         trialES->SetMolecule(trialMolecule);
          transitionRate += 1.0;
       }
       else{
-         trialMolecule.SynchronizeConfigurationTo(*this->molecule);
+         trialMolecule->SynchronizeConfigurationTo(*this->molecule);
       }
       
       // output molecular states
@@ -144,8 +144,8 @@ void MC::DoMC(int totalSteps, int elecState, double temperature, double stepWidt
    this->OutputLog(this->messageEndMC);
 }
 
-void MC::CreateTrialConfiguration(Molecule* trial,
-                                  const Molecule& current,
+void MC::CreateTrialConfiguration(IMolecule* trial,
+                                  const IMolecule& current,
                                   boost::random::variate_generator<
                                      boost::random::mt19937&,
                                      boost::uniform_real<>
@@ -206,7 +206,7 @@ bool MC::UsesTrial(const ElectronicStructure& currentES,
 }
 
 void MC::OutputMolecule(const ElectronicStructure& electronicStructure,
-                        const Molecule& molecule,
+                        const IMolecule& molecule,
                         int elecState) const{
    this->OutputEnergies(electronicStructure, elecState);
    this->OutputLog("\n");

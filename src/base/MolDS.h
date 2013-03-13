@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -28,15 +29,15 @@ private:
    double  ompStartTime;
    void Initialize();
    void Finalize(bool runsNormally) const;
-   void CalculateElectronicStructureOnce(Molecule* molecule, bool* runsNormally) const;
-   void DoMC(Molecule* molecule, bool* runsNormally) const;
-   void DoMD(Molecule* molecule, bool* runsNormally) const;
-   void DoRPMD(Molecule* molecule, bool* runsNormally) const;
-   void DoNASCO(Molecule* molecule, bool* runsNormally) const;
-   void OptimizeGeometry(Molecule* molecule, bool* runsNormally) const;
-   void DiagonalizePrincipalAxes(Molecule* molecule, bool* runsNormally) const;
-   void TranslateMolecule(Molecule* molecule, bool* runsNormally) const;
-   void RotateMolecule(Molecule* molecule, bool* runsNormally) const;
+   void CalculateElectronicStructureOnce(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const;
+   void DoMC(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const;
+   void DoMD(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const;
+   void DoRPMD(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const;
+   void DoNASCO(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const;
+   void OptimizeGeometry(const boost::shared_ptr<IMolecule>& molecule, bool* runsNormally) const;
+   void DiagonalizePrincipalAxes(IMolecule* molecule, bool* runsNormally) const;
+   void TranslateMolecule(IMolecule* molecule, bool* runsNormally) const;
+   void RotateMolecule(IMolecule* molecule, bool* runsNormally) const;
 };
 }
 #endif

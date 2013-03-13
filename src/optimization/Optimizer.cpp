@@ -53,22 +53,22 @@ Optimizer::~Optimizer(){
    //this->OutputLog("Optimizer deleted\n");
 }
 
-void Optimizer::Optimize(Molecule& molecule){
+void Optimizer::Optimize(const boost::shared_ptr<IMolecule>& molecule){
    this->OutputLog(this->messageStartGeometryOptimization);
-   this->ClearMolecularMomenta(molecule);
+   this->ClearMolecularMomenta(*molecule.get());
 
    // malloc electornic structure
    TheoryType theory = Parameters::GetInstance()->GetCurrentTheory();
    this->CheckEnableTheoryType(theory);
    boost::shared_ptr<ElectronicStructure> electronicStructure(ElectronicStructureFactory::Create());
-   electronicStructure->SetMolecule(&molecule);
+   electronicStructure->SetMolecule(molecule);
    electronicStructure->SetCanOutputLogs(this->CanOutputLogs());
-   molecule.SetCanOutputLogs(this->CanOutputLogs());
+   molecule->SetCanOutputLogs(this->CanOutputLogs());
 
    // Search Minimum
    double lineSearchedEnergy = 0.0;
    bool obtainesOptimizedStructure = false;
-   this->SearchMinimum(electronicStructure, molecule, &lineSearchedEnergy, &obtainesOptimizedStructure);
+   this->SearchMinimum(electronicStructure, *molecule.get(), &lineSearchedEnergy, &obtainesOptimizedStructure);
   
    // Not converged
    if(!obtainesOptimizedStructure){
@@ -124,7 +124,7 @@ void Optimizer::CheckEnableTheoryType(TheoryType theoryType) const{
    }
 }
 
-void Optimizer::ClearMolecularMomenta(Molecule& molecule) const{
+void Optimizer::ClearMolecularMomenta(IMolecule& molecule) const{
 #pragma omp parallel for schedule(auto) 
    for(int a=0; a<molecule.GetNumberAtoms(); a++){
       const Atom* atom = molecule.GetAtom(a);
@@ -132,7 +132,7 @@ void Optimizer::ClearMolecularMomenta(Molecule& molecule) const{
    }
 }
 
-void Optimizer::UpdateMolecularCoordinates(Molecule& molecule, double const* const* matrixForce, double dt) const{
+void Optimizer::UpdateMolecularCoordinates(IMolecule& molecule, double const* const* matrixForce, double dt) const{
 #pragma omp parallel for schedule(auto) 
    for(int a=0; a<molecule.GetNumberAtoms(); a++){
       const Atom* atom = molecule.GetAtom(a);
@@ -145,7 +145,7 @@ void Optimizer::UpdateMolecularCoordinates(Molecule& molecule, double const* con
    molecule.CalcXyzCOC();
 }
 
-void Optimizer::UpdateMolecularCoordinates(Molecule& molecule, double const* const* matrixForce) const{
+void Optimizer::UpdateMolecularCoordinates(IMolecule& molecule, double const* const* matrixForce) const{
 #pragma omp parallel for schedule(auto)
    for(int a=0; a<molecule.GetNumberAtoms(); a++){
       const Atom* atom = molecule.GetAtom(a);
@@ -158,7 +158,7 @@ void Optimizer::UpdateMolecularCoordinates(Molecule& molecule, double const* con
 }
 
 void Optimizer::UpdateElectronicStructure(boost::shared_ptr<ElectronicStructure> electronicStructure, 
-                                                Molecule& molecule,
+                                                IMolecule& molecule,
                                                 bool requireGuess, 
                                                 bool canOutputLogs) const{
    electronicStructure->SetCanOutputLogs(canOutputLogs);
@@ -170,7 +170,7 @@ void Optimizer::UpdateElectronicStructure(boost::shared_ptr<ElectronicStructure>
 }
 
 void Optimizer::OutputMoleculeElectronicStructure(boost::shared_ptr<ElectronicStructure> electronicStructure, 
-                                                        Molecule& molecule,
+                                                        IMolecule& molecule,
                                                         bool canOutputLogs) const{
    // output molecular configuration
    molecule.SetCanOutputLogs(canOutputLogs);
@@ -187,7 +187,7 @@ void Optimizer::OutputMoleculeElectronicStructure(boost::shared_ptr<ElectronicSt
 }
 
 void Optimizer::LineSearch(boost::shared_ptr<ElectronicStructure> electronicStructure,
-                           MolDS_base::Molecule& molecule,
+                           MolDS_base::IMolecule& molecule,
                            double& lineSearchCurrentEnergy,
                            double const* const* matrixForce,
                            int elecState,
@@ -214,7 +214,7 @@ void Optimizer::LineSearch(boost::shared_ptr<ElectronicStructure> electronicStru
 }
 
 bool Optimizer::SatisfiesConvergenceCriterion(double** matrixForce, 
-                                              const MolDS_base::Molecule& molecule,
+                                              const MolDS_base::IMolecule& molecule,
                                               double oldEnergy,
                                               double currentEnergy,
                                               double maxGradientThreshold,

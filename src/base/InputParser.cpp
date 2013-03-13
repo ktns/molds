@@ -444,7 +444,7 @@ void InputParser::AddInputTermsFromString(vector<string>& inputTerms, string str
    }
 }
 
-int InputParser::ParseMolecularGeometry(Molecule* molecule, vector<string>* inputTerms, int parseIndex) const{
+int InputParser::ParseMolecularGeometry(IMolecule* molecule, vector<string>* inputTerms, int parseIndex) const{
    parseIndex++;
    while((*inputTerms)[parseIndex].compare(this->stringGeometryEnd) != 0){
       double x = atof((*inputTerms)[parseIndex+1].c_str()) * Parameters::GetInstance()->GetAngstrom2AU();
@@ -1134,7 +1134,7 @@ int InputParser::ParseConditionsMemory(vector<string>* inputTerms, int parseInde
    return parseIndex;
 }
 
-void InputParser::Parse(Molecule* molecule, int argc, char *argv[]) const{
+void InputParser::Parse(IMolecule* molecule, int argc, char *argv[]) const{
 
    this->OutputLog(messageStartParseInput);
 
@@ -1297,7 +1297,7 @@ void InputParser::Parse(Molecule* molecule, int argc, char *argv[]) const{
 
 }
 
-void InputParser::CalcMolecularBasics(Molecule* molecule) const{
+void InputParser::CalcMolecularBasics(IMolecule* molecule) const{
    molecule->CalcBasics();
 }
 
@@ -1311,7 +1311,7 @@ void InputParser::ValidateVdWConditions() const{
    }
 }
 
-void InputParser::ValidateCisConditions(const Molecule& molecule) const{
+void InputParser::ValidateCisConditions(const IMolecule& molecule) const{
 
    // direct CIS
    int numberOcc = molecule.GetTotalNumberValenceElectrons()/2;
@@ -1364,7 +1364,7 @@ void InputParser::ValidateCisConditions(const Molecule& molecule) const{
    }
 }
 
-void InputParser::ValidateMdConditions(const Molecule& molecule) const{
+void InputParser::ValidateMdConditions(const IMolecule& molecule) const{
    int groundStateIndex = 0;
    int targetStateIndex = Parameters::GetInstance()->GetElectronicStateIndexMD();
    TheoryType theory = Parameters::GetInstance()->GetCurrentTheory();
@@ -1392,7 +1392,7 @@ void InputParser::ValidateMdConditions(const Molecule& molecule) const{
    } 
 }
 
-void InputParser::ValidateMcConditions(const Molecule& molecule) const{
+void InputParser::ValidateMcConditions(const IMolecule& molecule) const{
    int groundStateIndex = 0;
    int targetStateIndex = Parameters::GetInstance()->GetElectronicStateIndexMC();
    TheoryType theory = Parameters::GetInstance()->GetCurrentTheory();
@@ -1420,7 +1420,7 @@ void InputParser::ValidateMcConditions(const Molecule& molecule) const{
    }
 }
 
-void InputParser::ValidateRpmdConditions(const Molecule& molecule) const{
+void InputParser::ValidateRpmdConditions(const IMolecule& molecule) const{
    int groundStateIndex = 0;
    int targetStateIndex = Parameters::GetInstance()->GetElectronicStateIndexRPMD();
    TheoryType theory = Parameters::GetInstance()->GetCurrentTheory();
@@ -1448,7 +1448,7 @@ void InputParser::ValidateRpmdConditions(const Molecule& molecule) const{
    } 
 }
 
-void InputParser::ValidateNascoConditions(const Molecule& molecule) const{
+void InputParser::ValidateNascoConditions(const IMolecule& molecule) const{
    TheoryType theory = Parameters::GetInstance()->GetCurrentTheory();
    // Validate theory
    if(theory == CNDO2 || theory == INDO || theory == ZINDOS){
@@ -1484,7 +1484,7 @@ void InputParser::ValidateNascoConditions(const Molecule& molecule) const{
    }
 }
 
-void InputParser::ValidateOptimizationConditions(const Molecule& molecule) const{
+void InputParser::ValidateOptimizationConditions(const IMolecule& molecule) const{
    int groundStateIndex = 0;
    int targetStateIndex = Parameters::GetInstance()->GetElectronicStateIndexOptimization();
    TheoryType theory = Parameters::GetInstance()->GetCurrentTheory();
@@ -1532,7 +1532,7 @@ void InputParser::ValidateFrequenciesConditions() const{
    } 
 }
 
-void InputParser::OutputMolecularBasics(Molecule* molecule) const{
+void InputParser::OutputMolecularBasics(IMolecule* molecule) const{
    molecule->OutputTotalNumberAtomsAOsValenceelectrons();
    molecule->OutputConfiguration();
    molecule->OutputXyzCOM();

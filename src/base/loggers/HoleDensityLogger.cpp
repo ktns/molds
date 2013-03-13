@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -44,7 +45,7 @@ using namespace MolDS_base;
 using namespace MolDS_base_atoms;
 namespace MolDS_base_loggers{
 
-HoleDensityLogger::HoleDensityLogger(const Molecule& molecule, 
+HoleDensityLogger::HoleDensityLogger(const IMolecule& molecule,
                                      double const* const* fockMatrix, 
                                      double const* const* cisMatrix, 
                                      TheoryType theory) 

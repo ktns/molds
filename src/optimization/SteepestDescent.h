@@ -30,7 +30,7 @@ protected:
 private:
    std::string messageStartSteepestDescentStep;
    void SearchMinimum(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure,
-                      MolDS_base::Molecule& molecule,
+                      MolDS_base::IMolecule& molecule,
                       double* lineSearchedEnergy,
                       bool* obainesOptimizedStructure) const;
 };

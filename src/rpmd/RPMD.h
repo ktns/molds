@@ -1,5 +1,6 @@
 //************************************************************************//
 // Copyright (C) 2011-2012 Mikiya Fujii                                   // 
+// Copyright (C) 2013-2013 Katsuhiko Nishimra                             //
 //                                                                        // 
 // This file is part of MolDS.                                            // 
 //                                                                        // 
@@ -27,7 +28,7 @@ class RPMD : public MolDS_base::PrintController{
 public:
    RPMD();
    ~RPMD();
-   void DoRPMD(const MolDS_base::Molecule& refferenceMolecule);
+   void DoRPMD(const MolDS_base::IMolecule& refferenceMolecule);
 private:
    std::string messageStartInitialRPMD;
    std::string messageEndInitialRPMD;
@@ -53,29 +54,29 @@ private:
    void SetMessages();
    void SetEnableTheoryTypes();
    void CheckEnableTheoryType(MolDS_base::TheoryType theoryType, int elecState);
-   void CreateBeads(std::vector<boost::shared_ptr<MolDS_base::Molecule> >& molecularBeads, 
+   void CreateBeads(std::vector<boost::shared_ptr<MolDS_base::IMolecule> >& molecularBeads,
                     std::vector<boost::shared_ptr<MolDS_base::ElectronicStructure> >& electronicStructureBeads,
-                    const MolDS_base::Molecule& refferenceMolecule,
+                    const MolDS_base::IMolecule& refferenceMolecule,
                     int numBeads);
-   void UpdateMomenta(const std::vector<boost::shared_ptr<MolDS_base::Molecule> >& molecularBeads, 
+   void UpdateMomenta(const std::vector<boost::shared_ptr<MolDS_base::IMolecule> >& molecularBeads,
                       const std::vector<boost::shared_ptr<MolDS_base::ElectronicStructure> >& electronicStructureBeads,
                       int elecState,
                       double dt,
                       double templerature);
-   void UpdateCoordinates(const std::vector<boost::shared_ptr<MolDS_base::Molecule> >& molecularBeads,
+   void UpdateCoordinates(const std::vector<boost::shared_ptr<MolDS_base::IMolecule> >& molecularBeads,
                           double dt);
    void UpdateElectronicStructure(const std::vector<boost::shared_ptr<MolDS_base::ElectronicStructure> >& electronicStructureBeads);
-   void FluctuateBeads(const std::vector<boost::shared_ptr<MolDS_base::Molecule> >& molecularBeads,
+   void FluctuateBeads(const std::vector<boost::shared_ptr<MolDS_base::IMolecule> >& molecularBeads,
                        int elecState,
                        double temperature,
                        unsigned long seed);
    //void OutputEnergies(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure, double initialEnergy);
    //double OutputEnergies(boost::shared_ptr<MolDS_base::ElectronicStructure> electronicStructure);
-   double OutputEnergies(const std::vector<boost::shared_ptr<MolDS_base::Molecule> >& molecularBeads, 
+   double OutputEnergies(const std::vector<boost::shared_ptr<MolDS_base::IMolecule> >& molecularBeads,
                          const std::vector<boost::shared_ptr<MolDS_base::ElectronicStructure> >& electronicStructureBeads,
                          int elecState,
                          double temperature);
-   void OutputEnergies(const std::vector<boost::shared_ptr<MolDS_base::Molecule> >& molecularBeads, 
+   void OutputEnergies(const std::vector<boost::shared_ptr<MolDS_base::IMolecule> >& molecularBeads,
                        const std::vector<boost::shared_ptr<MolDS_base::ElectronicStructure> >& electronicStructureBeads,
                        int elecState,
                        double temperature,

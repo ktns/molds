@@ -22,6 +22,7 @@ namespace MolDS_base{
 
 class IMolecule : public MolDS_base::PrintController{
 public:
+   virtual boost::shared_ptr<IMolecule> Clone() const = 0;
    virtual int GetNumberAtoms() const = 0;
    virtual MolDS_base_atoms::Atom* GetAtom(int atomIndex) const = 0;
    virtual void AddAtom(MolDS_base_atoms::Atom* atom) = 0;
@@ -57,6 +58,9 @@ public:
    explicit Molecule(const Molecule& rhs);
    Molecule& operator=(const Molecule& rhs);
    ~Molecule();
+   boost::shared_ptr<IMolecule> Clone() const{
+      return boost::shared_ptr<IMolecule>(new Molecule(*this));
+   };
    inline int GetNumberAtoms() const{
 #ifdef MOLDS_DBG
       if(this->atomVect==NULL) throw MolDS_base::MolDSException(this->errorMessageGetNumberAtomsNull);

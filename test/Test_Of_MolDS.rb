@@ -999,6 +999,22 @@ ompNumThreads = "2"
 testerOmp.doesTestOmp(mklNumThreads,ompNumThreads)
 
 
+prefix = "h2o_h2o_cndo2"
+testerOmp = TesterOmp.new(prefix, <<"SECTION", <<"TITLE")
+---------------------------------------------------
+-----------  Test of multiple molecules  ----------
+---------------------------------------------------
+SECTION
+\t\t\t>>> H2O H2O <<<
+TITLE
+mklNumThreads = "1"
+ompNumThreads = "1"
+testerOmp.doesTestOmp(mklNumThreads,ompNumThreads)
+mklNumThreads = "2"
+ompNumThreads = "2"
+testerOmp.doesTestOmp(mklNumThreads,ompNumThreads)
+
+
 
 
 system("rm -rf temp.dat")

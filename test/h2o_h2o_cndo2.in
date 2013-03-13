@@ -1,0 +1,25 @@
+THEORY
+   cndo/2
+THEORY_END
+
+SCF
+   max_iter 50
+   rms_density 0.000001
+   damping_thresh 1.0
+   damping_weight 0.0
+   diis_num_error_vect 5
+   diis_start_error 0.1
+   diis_end_error 0.00000002
+SCF_END
+
+GEOMETRY
+H          1.64465       -0.88681        0.00741
+O          1.31362       -0.00073        0.01277
+H          0.34972       -0.10959       -0.02343
+GEOMETRY_END
+
+GEOMETRY
+H         -2.11788       -0.49601       -0.01907
+O         -1.35257        0.08431        0.00182
+H         -1.72485        0.95835        0.02051
+GEOMETRY_END

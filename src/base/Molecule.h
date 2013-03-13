@@ -20,7 +20,38 @@
 #define INCLUDED_MOLECULE
 namespace MolDS_base{
 
-class Molecule : public MolDS_base::PrintController{
+class IMolecule : public MolDS_base::PrintController{
+public:
+   virtual int GetNumberAtoms() const = 0;
+   virtual MolDS_base_atoms::Atom* GetAtom(int atomIndex) const = 0;
+   virtual void AddAtom(MolDS_base_atoms::Atom* atom) = 0;
+   virtual double* GetXyzCOM() const = 0;
+   virtual double* GetXyzCOM() = 0;
+   virtual double* GetXyzCOC() const = 0;
+   virtual double* GetXyzCOC() = 0;
+   virtual void CalcXyzCOM() = 0;
+   virtual void CalcXyzCOC() = 0;
+   virtual void CalcBasics() = 0;
+   virtual int GetTotalNumberAOs() const = 0;
+   virtual int GetTotalNumberValenceElectrons() const = 0;
+   virtual double GetTotalCoreMass() const = 0;
+   virtual void OutputXyzCOM() const = 0;
+   virtual void OutputXyzCOC() const = 0;
+   virtual void OutputTotalNumberAtomsAOsValenceelectrons() const = 0;
+   virtual void OutputConfiguration() const = 0;
+   virtual void OutputMomenta() const = 0;
+   virtual void CalcPrincipalAxes() = 0;
+   virtual void Rotate() = 0;
+   virtual void Translate() = 0;
+   virtual double GetDistanceAtoms(int indexAtomA, int indexAtomB) const = 0;
+   virtual double GetDistanceAtoms(const MolDS_base_atoms::Atom& atomA,
+                           const MolDS_base_atoms::Atom& atomB) const = 0;
+   virtual void SynchronizeConfigurationTo  (const IMolecule& ref) = 0;
+   virtual void SynchronizeMomentaTo        (const IMolecule& ref) = 0;
+   virtual void SynchronizePhaseSpacePointTo(const IMolecule& ref) = 0;
+};
+
+class Molecule : public IMolecule{
 public:
    Molecule();
    explicit Molecule(const Molecule& rhs);
@@ -60,9 +91,9 @@ public:
    double GetDistanceAtoms(int indexAtomA, int indexAtomB) const;
    double GetDistanceAtoms(const MolDS_base_atoms::Atom& atomA, 
                            const MolDS_base_atoms::Atom& atomB) const;
-   void SynchronizeConfigurationTo  (const Molecule& ref);
-   void SynchronizeMomentaTo        (const Molecule& ref);
-   void SynchronizePhaseSpacePointTo(const Molecule& ref);
+   void SynchronizeConfigurationTo  (const IMolecule& ref);
+   void SynchronizeMomentaTo        (const IMolecule& ref);
+   void SynchronizePhaseSpacePointTo(const IMolecule& ref);
 private:
    std::vector<MolDS_base_atoms::Atom*>* atomVect;
    double* xyzCOM; // x, y, z coordinates of Center of Mass;

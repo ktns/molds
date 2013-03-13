@@ -683,7 +683,7 @@ double Molecule::GetDistanceAtoms(const Atom& atomA, const Atom& atomB) const{
 
 }
 
-void Molecule::SynchronizeConfigurationTo(const Molecule& ref){
+void Molecule::SynchronizeConfigurationTo(const IMolecule& ref){
    for(int a=0; a<this->GetNumberAtoms(); a++){
       Atom& atom = *this->GetAtom(a);
       const Atom& refAtom = *ref.GetAtom(a);
@@ -695,7 +695,7 @@ void Molecule::SynchronizeConfigurationTo(const Molecule& ref){
    this->CalcXyzCOM();
 }
 
-void Molecule::SynchronizeMomentaTo(const Molecule& ref){
+void Molecule::SynchronizeMomentaTo(const IMolecule& ref){
    for(int a=0; a<this->GetNumberAtoms(); a++){
       Atom& atom = *this->GetAtom(a);
       const Atom& refAtom = *ref.GetAtom(a);
@@ -705,7 +705,7 @@ void Molecule::SynchronizeMomentaTo(const Molecule& ref){
    }
 }
 
-void Molecule::SynchronizePhaseSpacePointTo(const Molecule& ref){
+void Molecule::SynchronizePhaseSpacePointTo(const IMolecule& ref){
    for(int a=0; a<this->GetNumberAtoms(); a++){
       Atom& atom = *this->GetAtom(a);
       const Atom& refAtom = *ref.GetAtom(a);

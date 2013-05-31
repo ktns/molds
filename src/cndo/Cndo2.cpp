@@ -97,6 +97,7 @@ Cndo2::Cndo2(){
    this->bondingAdjustParameterK[1] = 0.750; //see (3.79) in J. A. Pople book
    this->gammaAB = NULL;
    //this->OutputLog("Cndo created\n");
+   throw MolDSException("test");
 }
 
 Cndo2::~Cndo2(){

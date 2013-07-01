@@ -95,6 +95,8 @@ void BFGS::SetMessages(){
       = "Trust radius is %f\n";
    this->formatIncreaseScalingFactor
       = "Scaling factor is increased to %e.\n";
+   this->formatDecreaseScalingFactor
+      = "Scaling factor is decreased to %e.\n";
 }
 
 void BFGS::SearchMinimum(boost::shared_ptr<ElectronicStructure> electronicStructure,
@@ -345,13 +347,23 @@ void BFGS::CalcRFOStep(double* vectorStep,
          this->OutputLog(boost::format(this->formatRFOStepSize)                % normStep);
          this->OutputLog(boost::format(this->formatTrustRadiusIs)              % trustRadius);
 
-         // Limit the step size to trustRadius
+         const double lowerBoundFactor=0.99;
+         // Limit the step size < trustRadius
          if(normStep > trustRadius){
             alpha *= normStep / trustRadius * 1.1; // 1.1 is speed up factor
             this->OutputLog(boost::format(this->formatIncreaseScalingFactor) % alpha);
             this->OutputLog(this->messageRecalculateRFOStep);
          }
-      }while(normStep > trustRadius);
+         // Limit the step size > lowerBoundFactor * trustRadius, if alpha > 1
+         else if(alpha > 1 && normStep < trustRadius*lowerBoundFactor){
+            alpha *= normStep / trustRadius / 1.05; //1.05 is speed up factor
+            this->OutputLog(boost::format(this->formatDecreaseScalingFactor) % alpha);
+            this->OutputLog(this->messageRecalculateRFOStep);
+         }
+         else{
+            break;
+         }
+      }while(true);
    }
    catch(MolDSException ex){
       MallocerFreer::GetInstance()->Free(&matrixAugmentedHessian, dimension+1, dimension+1);

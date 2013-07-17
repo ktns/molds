@@ -32,16 +32,32 @@
 #include"base/atoms/Atom.h"
 #include"base/Molecule.h"
 #include"base/MolDS.h"
+#include<sstream>
+#include<boost/archive/text_iarchive.hpp>
+#include<boost/archive/text_oarchive.hpp>
 using namespace std;
 using namespace MolDS_base;
 int main(int argc, char *argv[]){
    try{
-      MolDS_mpi::MpiProcess::CreateInstance(argc, argv);
-      boost::shared_ptr<MolDS_base::MolDS> molds(new MolDS_base::MolDS());
-      molds->Run(argc, argv);
-      MolDS_mpi::MpiProcess::DeleteInstance();
+      stringstream ss;
+      try{
+         MolDSException e("hoge");
+         e.SetKeyValue<int>(0,2);
+         throw e;
+      }
+      catch(MolDSException(e)){
+         e.Serialize(ss);
+      }
+      cout << "begin_dump" << endl;
+      cout << ss.str() << endl;
+      cout << "end_dump" << endl;
+      MolDSException e = MolDSException::Deserialize(ss);
+      throw e;
    }
-   catch(exception ex){
+   catch(MolDSException ex){
+      cout << ex.what();
+   }
+   catch(exception& ex){
       cout << ex.what();
    }
    return 0;

@@ -40,13 +40,17 @@ using namespace MolDS_base;
 int main(int argc, char *argv[]){
    try{
       stringstream ss;
-      try{
-         MolDSException e("hoge");
-         e.SetKeyValue<int>(0,2);
-         throw e;
-      }
-      catch(MolDSException(e)){
-         e.Serialize(ss);
+#pragma omp parallel for schedule(auto)
+      for(int i = 0; i < 3; i++){
+         try{
+            MolDSException e("hoge");
+            e.SetKeyValue<int>(0,i);
+            throw e;
+         }
+         catch(MolDSException(e)){
+#pragma omp critical
+            e.Serialize(ss);
+         }
       }
       cout << "begin_dump" << endl;
       cout << ss.str() << endl;

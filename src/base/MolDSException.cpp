@@ -187,6 +187,7 @@ MolDSException MolDSException::Deserialize(std::istream& is){
          }
       }
       catch(...){
+         cerr << "error in deserialization of multiple exceptions" << endl;
          p->LastException()->nextException.reset();
          break;
       }

@@ -116,15 +116,8 @@ void GEDIIS::SearchMinimum(boost::shared_ptr<ElectronicStructure> electronicStru
             vectorOldForce[i] = vectorForce[i];
          }
 
-         //Store old coordinates
-         MallocerFreer::GetInstance()->Malloc(&matrixOldCoordinates, molecule.GetNumberAtoms(), CartesianType_end);
-         for(int i=0;i<molecule.GetNumberAtoms();i++){
-            const Atom*   atom = molecule.GetAtom(i);
-            const double* xyz  = atom->GetXyz();
-            for(int j=0;j<CartesianType_end;j++){
-               matrixOldCoordinates[i][j] = xyz[j];
-            }
-         }
+         this->StoreMolecularGeometry(matrixOldCoordinates, molecule);
+
          // Level shift Hessian redundant modes
          this->ShiftHessianRedundantMode(matrixHessian, molecule);
 
@@ -176,14 +169,8 @@ void GEDIIS::SearchMinimum(boost::shared_ptr<ElectronicStructure> electronicStru
          }
 
          //Calculate displacement (K_k at Eq. (15) in [SJTO_1983])
-         MallocerFreer::GetInstance()->Malloc(&matrixDisplacement, molecule.GetNumberAtoms(), CartesianType_end);
-         for(int i=0;i<molecule.GetNumberAtoms();i++){
-            const Atom*   atom = molecule.GetAtom(i);
-            const double* xyz  = atom->GetXyz();
-            for(int j=0;j<CartesianType_end;j++){
-               matrixDisplacement[i][j] = xyz[j] - matrixOldCoordinates[i][j];
-            }
-         }
+         this->CalcDisplacement(matrixDisplacement, matrixOldCoordinates, molecule);
+
          matrixForce = electronicStructure->GetForce(elecState);
          vectorForce = &matrixForce[0][0];
 

@@ -34,6 +34,10 @@ protected:
    public:
       GEDIISHistory();
       ~GEDIISHistory();
+      void AddGEDIISHistory(double energy,
+                            const MolDS_base::Molecule,
+                            double const* const* matrixForce);
+      void SolveGEDIISEquation()const;
    };
 
 private:

@@ -171,20 +171,8 @@ void GEDIIS::SearchMinimum(boost::shared_ptr<ElectronicStructure> electronicStru
          }
 
          if(lineSearchCurrentEnergy > lineSearchInitialEnergy){
-            // Rollback molecular geometry
-            bool tempCanOutputLogs = molecule.CanOutputLogs();
-            bool rollbackCanOutputLogs = true;
-            molecule.SetCanOutputLogs(rollbackCanOutputLogs);
-            this->OutputLog(this->messageHillClimbing);
-            for(int i=0;i<molecule.GetNumberAtoms();i++){
-               const Atom* atom = molecule.GetAtom(i);
-               double*     xyz  = atom->GetXyz();
-               for(int j=0;j<CartesianType_end;j++){
-                  xyz[j] = matrixOldCoordinates[i][j];
-               }
-            }
+            this->RollbackMolecularGeometry(molecule, matrixOldCoordinates);
             lineSearchCurrentEnergy = lineSearchInitialEnergy;
-            molecule.SetCanOutputLogs(tempCanOutputLogs);
          }
 
          //Calculate displacement (K_k at Eq. (15) in [SJTO_1983])

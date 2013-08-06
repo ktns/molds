@@ -1,0 +1,7 @@
+set sw=3
+set et
+set cino+=(0
+set cino+=g0
+set makeprg=make\ -f\ Makefile_GNU\ CFLAGS='-g\ -O0'\ OPENBLAS_TOP_DIR=/usr/local/openblas-0.2.8/\ LIBSBASE='\ -lpthread\ -lgomp'
+nnoremap <ESC>m :make<CR>
+nnoremap <ESC>n :cn<CR>

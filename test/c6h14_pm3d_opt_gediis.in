@@ -1,0 +1,47 @@
+// example of the input file
+THEORY
+pm3/pddg
+THEORY_END
+
+SCF
+ max_iter 50
+ rms_density 0.000001
+ damping_thresh 1.0
+ damping_weight 0.0
+ diis_num_error_vect 5
+ diis_start_error 0.1
+ diis_end_error 0.00000002
+SCF_END
+
+OPTIMIZATION
+   method gediis
+   total_steps 50
+   electronic_state 0
+   max_gradient 0.00045
+   rms_gradient 0.00030
+OPTIMIZATION_END
+
+// hexane
+GEOMETRY
+C          0.77841       -0.04441        0.00680
+C          2.28388        0.09063        0.17247
+C          3.03901       -0.73988       -0.86552
+C          4.55275       -0.57552       -0.71726
+C          5.30745       -1.41483       -1.74836
+C          6.81264       -1.25315       -1.60588
+H          0.25873        0.55274        0.76261
+H          0.46255       -1.08642        0.12077
+H          0.45967        0.30550       -0.98018
+H          2.56530       -0.23070        1.18183
+H          2.56153        1.14718        0.07890
+H          2.73425       -0.43387       -1.87366
+H          2.77061       -1.79744       -0.75387
+H          4.85812       -0.87311        0.29320
+H          4.82061        0.48133       -0.83763
+H          5.00858       -1.11879       -2.76052
+H          5.04715       -2.47318       -1.62963
+H          7.11072       -0.20971       -1.75040
+H          7.33165       -1.86104       -2.35363
+H          7.14980       -1.57304       -0.61483
+GEOMETRY_END
+

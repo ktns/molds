@@ -52,15 +52,17 @@ int main(int argc, char *argv[]){
          return 0;
       }
    }
+
+   int exit_status = 0;
    try{
       MolDS_mpi::MpiProcess::CreateInstance(argc, argv);
       boost::shared_ptr<MolDS_base::MolDS> molds(new MolDS_base::MolDS());
-      molds->Run(argc, argv);
+      exit_status = molds->Run(argc, argv);
       MolDS_mpi::MpiProcess::DeleteInstance();
    }
    catch(exception& ex){
       cout << ex.what();
    }
-   return 0;
+   return exit_status;
 }
 

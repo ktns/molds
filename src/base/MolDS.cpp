@@ -62,7 +62,7 @@
 using namespace std;
 using namespace MolDS_base_factories;
 namespace MolDS_base{
-void MolDS::Run(int argc, char *argv[]){
+int MolDS::Run(int argc, char *argv[]){
    bool runsNormally(true);
    Molecule* molecule(NULL);
    
@@ -129,6 +129,8 @@ void MolDS::Run(int argc, char *argv[]){
 
    delete molecule;
    this->Finalize(runsNormally);
+
+   return runsNormally ? 0 : 1;
 }
 
 void MolDS::Initialize(){

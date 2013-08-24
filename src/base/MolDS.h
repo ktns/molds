@@ -21,7 +21,7 @@
 namespace MolDS_base{
 class MolDS: public PrintController{
 public:
-   void Run(int argc, char *argv[]);
+   int Run(int argc, char *argv[]);
 private:
    time_t  startTime;
    clock_t startTick;

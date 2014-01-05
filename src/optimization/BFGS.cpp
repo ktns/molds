@@ -274,20 +274,29 @@ void BFGS::CalcRFOStep(double* vectorStep,
                                                        dimension+1,
                                                        calcEigenVectors);
 
-         // Select a RFO step as the eigenvector whose eivenvalue is the lowest
-         for(int i=0;i<dimension;i++){
-            // Scale last element of eigenvector to 1/alpha because
-            // [vectorStep, 1] is the eigenvector of augmented Hessian.
-            // See Eq. (7) in [EPW_1997].
-            vectorStep[i] = matrixAugmentedHessian[0][i] / matrixAugmentedHessian[0][dimension] / alpha;
-            if(isnan(vectorStep[i])){
-               throw MolDSException(boost::format(this->errorMessageNaNInRFOStep)
-                     % i % matrixAugmentedHessian[0][i] % matrixAugmentedHessian[0][dimension] % alpha);
-            }
-         }
+         memset(vectorStep, 0, sizeof(vectorStep[0])*dimension);
+         double const *vectorFirstEigenvectorOfAugmentedHessian = matrixAugmentedHessian[0];
+         // Select the eigenvector whose eivenvalue is the lowest and
+         // scale last element of eigenvector to 1/alpha because
+         // [S_k, 1/alpha] is the eigenvector of augmented Hessian.
+         // See Eq. (7) in [EPW_1997].
+         MolDS_wrappers::Blas::GetInstance()->Daxpy(dimension,
+                                                    1.0 / alpha / vectorFirstEigenvectorOfAugmentedHessian[dimension],
+                                                    vectorFirstEigenvectorOfAugmentedHessian,
+                                                    vectorStep);
          //
          // Calculate size of the RFO step
          normStep = MolDS_wrappers::Blas::GetInstance()->Dnrm2(dimension, vectorStep);
+
+         // NaN check
+         if(isnan(normStep)){
+            for(MolDS_wrappers::molds_blas_int i=0; i < dimension; i++){
+               if(isnan(vectorStep[i])){
+                  throw MolDSException(boost::format(this->errorMessageNaNInRFOStep)
+                                       % i % matrixAugmentedHessian[0][i] % matrixAugmentedHessian[0][dimension] % alpha);
+               }
+            }
+         }
 
          this->OutputLog(boost::format(this->formatLowestHessianEigenvalue)    % vectorEigenValues[0]);
          this->OutputLog(boost::format(this->format2ndLowestHessianEigenvalue) % vectorEigenValues[1]);

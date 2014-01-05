@@ -297,7 +297,9 @@ void BFGS::CalcRFOStep(double* vectorStep,
 
          // Limit the step size to trustRadius
          if(normStep > trustRadius){
-            alpha *= normStep / trustRadius * 1.1; // 1.1 is speed up factor
+            const double maxScalingStep = 10;
+            alpha *= min(normStep / trustRadius * 1.1, // 1.1 is speed up factor
+                         maxScalingStep);              // Limit increase ratio of the scaling factor
             this->OutputLog(boost::format(this->formatIncreaseScalingFactor) % alpha);
             this->OutputLog(this->messageRecalculateRFOStep);
          }

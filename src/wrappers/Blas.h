@@ -27,6 +27,12 @@ class Blas: public MolDS_base::PrintController, private MolDS_base::Uncopyable{
 public:
    static Blas* GetInstance();
    static void DeleteInstance();
+   void Dscal(molds_blas_int n,
+              double alpha,
+              double const* vectorX) const;
+   void Dscal(molds_blas_int n,
+              double alpha,
+              double const* vectorX, molds_blas_int incrementX) const;
    void Dcopy(molds_blas_int n,
               double const* vectorX,
               double*       vectorY) const;

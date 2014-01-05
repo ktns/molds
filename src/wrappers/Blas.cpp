@@ -68,6 +68,25 @@ void Blas::DeleteInstance(){
    blas = NULL;
 }
 
+
+// vectorX = a * vectorX
+//    vectorX: n-vector
+void Blas::Dscal(molds_blas_int n,
+                 double alpha,
+                 double const* vectorX) const{
+   molds_blas_int incrementX = 1;
+   this->Dscal(n, alpha, vectorX, incrementX);
+}
+
+// vectorX = a * vectorX
+//    vectorX: n-vector
+void Blas::Dscal(molds_blas_int n,
+                 double alpha,
+                 double const* vectorX, molds_blas_int incrementX) const{
+   double* x = const_cast<double*>(&vectorX[0]);
+   cblas_dscal(n, alpha, x, incrementX);
+}
+
 // vectorY = vectorX
 //    vectorX: n-vector
 //    vectorY: n-vector
